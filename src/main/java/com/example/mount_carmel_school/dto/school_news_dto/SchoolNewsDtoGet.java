@@ -21,9 +21,14 @@ public class SchoolNewsDtoGet {
     public SchoolNewsDtoGet(SchoolNews schoolNews)
     {
         BeanUtils.copyProperties(schoolNews,this,"schoolNewsParagraphs");
-        for(SchoolNewsParagraph item:schoolNews.getSchoolNewsParagraphs())
+
+        if(schoolNews.getSchoolNewsParagraphs() != null)
         {
-            this.schoolNewsParagraphs.add(new SchoolNewsParagraphDtoGet(item));
+            for(SchoolNewsParagraph item:schoolNews.getSchoolNewsParagraphs())
+            {
+                this.schoolNewsParagraphs.add(new SchoolNewsParagraphDtoGet(item,"NEWS"));
+            }
+
         }
 
     }
@@ -33,9 +38,13 @@ public class SchoolNewsDtoGet {
         BeanUtils.copyProperties(schoolNews,this,"schoolNewsParagraphs");
 
         if(!ignore.equals("PARAGRAPH")){
-            for(SchoolNewsParagraph item:schoolNews.getSchoolNewsParagraphs())
+            if(schoolNews.getSchoolNewsParagraphs() != null)
             {
-                this.schoolNewsParagraphs.add(new SchoolNewsParagraphDtoGet(item,"NEWS"));
+                for(SchoolNewsParagraph item:schoolNews.getSchoolNewsParagraphs())
+                {
+                    this.schoolNewsParagraphs.add(new SchoolNewsParagraphDtoGet(item,"NEWS"));
+                }
+
             }
         }
 

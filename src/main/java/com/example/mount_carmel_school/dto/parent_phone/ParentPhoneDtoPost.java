@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ParentPhoneDtoPost {
+    private Long parentId;
     private String phone;
 }

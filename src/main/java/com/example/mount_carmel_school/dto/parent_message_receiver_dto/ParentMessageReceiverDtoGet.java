@@ -15,7 +15,7 @@ public class ParentMessageReceiverDtoGet {
 
     private Long id;
     private Boolean isRead;
-    private ParentMessageDtoGet parentMessageDtoGet;
+    private ParentMessageDtoGet message;
     private UserDtoGet receiver;
     private Date createdAt;
     private Date lastModifiedAt;
@@ -23,6 +23,6 @@ public class ParentMessageReceiverDtoGet {
     {
         BeanUtils.copyProperties(parentMessageReceiver,this,"receiver","parentMessageDtoGet");
         this.receiver = new UserDtoGet(parentMessageReceiver.getReceiver());
-        this.parentMessageDtoGet = new ParentMessageDtoGet(parentMessageReceiver.getParentMessage());
+        this.message = new ParentMessageDtoGet(parentMessageReceiver.getParentMessage());
     }
 }

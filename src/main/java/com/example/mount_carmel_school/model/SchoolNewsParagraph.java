@@ -45,4 +45,6 @@ public class SchoolNewsParagraph extends Auditable<String> {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "schoolNewsParagraph")
     private List<SchoolNewsParagraphPhoto> schoolNewsParagraphPhotos;
+
+
 }

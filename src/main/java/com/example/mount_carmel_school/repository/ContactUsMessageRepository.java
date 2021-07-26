@@ -11,4 +11,5 @@ public interface ContactUsMessageRepository extends JpaRepository<ContactUsMessa
     public List<ContactUsMessage> findContactUsMessageByEmail(String email);
     public List<ContactUsMessage> findContactUsMessageByIsRead(boolean status);
     public List<ContactUsMessage> findContactUsMessageByIsReplied(boolean status);
+    public ContactUsMessage findContactUsMessageByEmailAndMessageAndNames(String email,String message,String names);
 }

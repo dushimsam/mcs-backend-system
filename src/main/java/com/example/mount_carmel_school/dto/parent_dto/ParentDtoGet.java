@@ -6,6 +6,7 @@ import com.example.mount_carmel_school.dto.student_dto.StudentDtoGet;
 import com.example.mount_carmel_school.model.Parent;
 import com.example.mount_carmel_school.model.ParentPhone;
 
+import com.example.mount_carmel_school.model.Student;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
@@ -25,9 +26,48 @@ public class ParentDtoGet {
     public ParentDtoGet(Parent parent){
         BeanUtils.copyProperties(parent,this,"user");
         this.user = new UserDtoGet(parent.getUser());
-        for(ParentPhone parentPhone: parent.getPhones())
+
+        if(parent.getPhones() != null)
         {
-            this.phones.add(new ParentPhoneDtoGet(parentPhone));
+            for(ParentPhone parentPhone: parent.getPhones())
+            {
+                this.phones.add(new ParentPhoneDtoGet(parentPhone,"PARENT"));
+            }
+
         }
+
+        if(parent.getStudents() != null)
+        {
+            for(Student student: parent.getStudents())
+            {
+                this.students.add(new StudentDtoGet(student));
+            }
+
+        }
+    }
+
+    public ParentDtoGet(Parent parent,String ignore){
+        BeanUtils.copyProperties(parent,this,"user");
+        this.user = new UserDtoGet(parent.getUser());
+
+
+        if(parent.getStudents() != null)
+        {
+            for(Student student: parent.getStudents())
+            {
+                this.students.add(new StudentDtoGet(student));
+            }
+
+        }
+
+        if(parent.getPhones() != null && !ignore.equals("PHONE"))
+        {
+            for(ParentPhone parentPhone: parent.getPhones())
+            {
+                this.phones.add(new ParentPhoneDtoGet(parentPhone,"PARENT"));
+            }
+
+        }
+
     }
 }

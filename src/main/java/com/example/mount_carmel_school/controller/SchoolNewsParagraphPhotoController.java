@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/school-news-paragraph-controller")
+@RequestMapping(path = "api/v1/school-news-paragraph-photos")
 @AllArgsConstructor
 public class SchoolNewsParagraphPhotoController {
     private final SchoolNewsParagraphPhotoService schoolNewsParagraphPhotoService;

@@ -28,6 +28,11 @@ public class SchoolEmployeeController {
     public ResponseEntity<SchoolEmployeeDtoGet> add(@RequestBody SchoolEmployeeDtoPost schoolEmployeeDtoPost)  {
         return new ResponseEntity<>(schoolEmployeeService.add(schoolEmployeeDtoPost),HttpStatus.CREATED);
     }
+    @PutMapping(path = "{id}")
+    public  ResponseEntity<SchoolEmployeeDtoGet> update(
+            @PathVariable("id") Long id,@RequestBody SchoolEmployeeDtoPost schoolEmployeeDtoPost) {
+        return new ResponseEntity<>(schoolEmployeeService.update(id,schoolEmployeeDtoPost), HttpStatus.OK);
+    }
 
     @GetMapping(path = "{id}")
     public  ResponseEntity<SchoolEmployeeDtoGet> get(

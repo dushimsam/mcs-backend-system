@@ -34,7 +34,7 @@ public class Parent extends Auditable<String> {
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "students_parents",
             joinColumns = {@JoinColumn(name = "parent_id")},
             inverseJoinColumns = {@JoinColumn(name = "student_id")}

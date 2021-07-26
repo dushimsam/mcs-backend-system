@@ -52,6 +52,24 @@ public class SchoolEmployeeService {
 
     }
 
+    public SchoolEmployeeDtoGet update(Long id,SchoolEmployeeDtoPost schoolEmployeeDtoPost)  {
+
+        SchoolEmployee schoolEmployee = employeeRepository.findById(id).orElseThrow(()->new NotFoundException("SchoolEmployee"));
+        User user = userRepository.findById(schoolEmployeeDtoPost.getUserId()).orElseThrow(()->new NotFoundException("User"));
+
+        if(schoolEmployee.getUser().getId() != schoolEmployee.getUser().getId())
+        {
+            throw new ApiRequestException("Can not update the user");
+        }
+
+        BeanUtils.copyProperties(schoolEmployeeDtoPost, schoolEmployee);
+        schoolEmployee.setUser(user);
+        return  new SchoolEmployeeDtoGet(employeeRepository.save(schoolEmployee));
+
+    }
+
+
+
     public List<SchoolEmployeeDtoGet> getAll() {
         List<SchoolEmployee> schoolEmployees =  employeeRepository.findAll();
         List<SchoolEmployeeDtoGet> schoolEmployeesGet = new ArrayList<>();

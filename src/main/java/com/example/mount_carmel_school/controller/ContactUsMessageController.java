@@ -2,10 +2,7 @@ package com.example.mount_carmel_school.controller;
 
 import com.example.mount_carmel_school.dto.contact_us_message_dto.ContactUsMessageDtoGet;
 import com.example.mount_carmel_school.dto.contact_us_message_dto.ContactUsMessageDtoPost;
-import com.example.mount_carmel_school.dto.parent_dto.ParentDtoGet;
-import com.example.mount_carmel_school.dto.parent_dto.ParentDtoPost;
 import com.example.mount_carmel_school.service.ContactUsMessageService;
-import com.example.mount_carmel_school.service.ParentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +21,9 @@ public class ContactUsMessageController {
         return new  ResponseEntity<List<ContactUsMessageDtoGet>>(contactUsMessageService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/unread")
-    public ResponseEntity<List<ContactUsMessageDtoGet>>  getUnRead() {
-        return new ResponseEntity<List<ContactUsMessageDtoGet>>(contactUsMessageService.getUnReadMessages(),HttpStatus.OK);
+    @GetMapping("/is-read/status/{status}")
+    public ResponseEntity<List<ContactUsMessageDtoGet>>  getByReadStatus( @PathVariable("status") boolean status) {
+        return new ResponseEntity<List<ContactUsMessageDtoGet>>(contactUsMessageService.getByReadStatus(status),HttpStatus.OK);
     }
 
 
@@ -36,9 +33,9 @@ public class ContactUsMessageController {
         return   new ResponseEntity<ContactUsMessageDtoGet>(contactUsMessageService.get(id),HttpStatus.OK);
     }
 
-    @GetMapping(path = "/un-replied")
-    public ResponseEntity<List<ContactUsMessageDtoGet>>  getUnRepliedMessages() {
-        return   new ResponseEntity<List<ContactUsMessageDtoGet>>(contactUsMessageService.getUnRepliedMessages(),HttpStatus.OK);
+    @GetMapping(path = "/is-replied/status/{status}")
+    public ResponseEntity<List<ContactUsMessageDtoGet>>  getByRepliedStatus(@PathVariable("status") boolean status) {
+        return   new ResponseEntity<List<ContactUsMessageDtoGet>>(contactUsMessageService.getByRepliedStatus(status),HttpStatus.OK);
     }
 
 

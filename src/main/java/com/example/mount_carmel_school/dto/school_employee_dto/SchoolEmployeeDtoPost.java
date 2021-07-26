@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class SchoolEmployeeDtoPost {
-    private Long schoolId;
     private String residence;
     private Long userId;
 }

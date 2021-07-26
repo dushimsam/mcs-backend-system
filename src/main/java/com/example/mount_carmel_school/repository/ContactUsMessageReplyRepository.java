@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface ContactUsMessageReplyRepository extends JpaRepository<ContactUsMessageReply,Long> {
     public List<ContactUsMessageReply> findContactUsMessageReplyByContactUsMessage(ContactUsMessage contactUsMessage);
+
 }

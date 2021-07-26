@@ -17,7 +17,7 @@ public class SchoolNewsParagraphPhotoDtoGet {
     public SchoolNewsParagraphPhotoDtoGet(SchoolNewsParagraphPhoto schoolNewsParagraphPhoto)
     {
         BeanUtils.copyProperties(schoolNewsParagraphPhoto,this,"schoolNewsParagraph");
-        this.schoolNewsParagraph = new SchoolNewsParagraphDtoGet(schoolNewsParagraphPhoto.getSchoolNewsParagraph());
+        this.schoolNewsParagraph = new SchoolNewsParagraphDtoGet(schoolNewsParagraphPhoto.getSchoolNewsParagraph(),"PHOTO");
     }
 
     public SchoolNewsParagraphPhotoDtoGet(SchoolNewsParagraphPhoto schoolNewsParagraphPhoto,String ignore)

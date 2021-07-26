@@ -25,12 +25,14 @@ public class Student extends Auditable<String> {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private String studentCode;
 
     @NotNull
     private String studentNames;
 
     @NotNull
+    @Column(nullable = false)
     private String studentClass;
 
 }

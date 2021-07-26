@@ -23,10 +23,13 @@ public class SchoolNewsParagraphPhoto extends Auditable<String> {
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "school_news_paragraphs_photos")
     private Long id;
 
+
     @NotNull
     @Column(nullable = false)
     private String photoPath;
 
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "school_news_paragraph_id",referencedColumnName = "id")
     private SchoolNewsParagraph schoolNewsParagraph;

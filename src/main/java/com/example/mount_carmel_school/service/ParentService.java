@@ -51,18 +51,26 @@ public class ParentService {
             BeanUtils.copyProperties(parentDtoPost,newParent);
             newParent.setUser(user);
             Parent savedParent = parentRepository.save(newParent);
-            parentPhoneService.addPhoneToParent(new ParentPhoneDtoPost(parentDtoPost.getPhone()),savedParent.getId());
+            parentPhoneService.addPhoneToParent(new ParentPhoneDtoPost(savedParent.getId(), parentDtoPost.getPhone()));
             return  get(savedParent.getId());
         }
 
 
 
-    public void handleNewParentPhones(Parent parent,List<ParentPhoneDtoPost> parentPhonePosts)
-    {
-        for(ParentPhoneDtoPost phonePost :parentPhonePosts)
+    public ParentDtoGet update(Long id, ParentDtoPost parentDtoPost)  {
+
+        Parent parent = parentRepository.findById(id).orElseThrow(()->new NotFoundException("Parent"));
+        User user = userRepository.findById(parentDtoPost.getUserId()).orElseThrow(()->new NotFoundException("User"));
+
+        if(parent.getUser().getId() != parent.getUser().getId())
         {
-            parentPhoneService.addPhoneToParent(phonePost,parent.getId());
+            throw new ApiRequestException("Can not update the user");
         }
+
+        BeanUtils.copyProperties(parentDtoPost, parent);
+        parent.setUser(user);
+        return  new ParentDtoGet(parentRepository.save(parent));
+
     }
 
 

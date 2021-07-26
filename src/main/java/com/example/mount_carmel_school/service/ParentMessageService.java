@@ -44,7 +44,24 @@ public class ParentMessageService {
 
 
     public ParentMessageDtoGet add(ParentMessageDtoPost parentMessageDtoPost){
+
         User user = userRepository.findById(parentMessageDtoPost.getUser_senderId()).orElseThrow(()->new NotFoundException("User Sender"));
+
+        if(parentMessageDtoPost.getMessageStatus() == PARTICULAR)
+        {
+            User receiver = userRepository.findById(parentMessageDtoPost.getUser_receiverId()).orElseThrow(()->new NotFoundException("User Receiver"));
+
+            if(parentMessageDtoPost.getUser_senderId().equals(parentMessageDtoPost.getUser_receiverId()))
+            {
+                throw new ApiRequestException("Sender and Receiver are the same");
+            }
+        }else if(parentMessageDtoPost.getMessageStatus() == ALL && user.getCategory() == PARENT)
+        {
+            throw new ApiRequestException("A Parent is not allowed to send the Message with ALL status");
+        }
+
+
+
         ParentMessage parentMessage = new ParentMessage();
         BeanUtils.copyProperties(parentMessageDtoPost,parentMessage);
         parentMessage.setSender(user);
@@ -136,7 +153,7 @@ public class ParentMessageService {
     public DeleteResponseDto delete(Long parentMessageId) {
         ParentMessage parentMessage = parentMessageRepository.findById(parentMessageId).orElseThrow(()->new NotFoundException("Parent Message"));
         parentMessageRepository.delete(parentMessage);
-        return  new DeleteResponseDto("DELETED SUCCESSFULLY");
+        return  new DeleteResponseDto(parentMessage);
     }
 
 

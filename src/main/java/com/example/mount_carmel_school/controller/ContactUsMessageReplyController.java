@@ -38,7 +38,7 @@ public class ContactUsMessageReplyController {
     }
 
 
-    @GetMapping (path = "/massage/{messageId}")
+    @GetMapping (path = "/message/{messageId}")
     public ResponseEntity<List<ContactUsMessageReplyDtoGet>> getByMessage(
             @PathVariable("messageId") Long messageId) {
         return  new  ResponseEntity<List<ContactUsMessageReplyDtoGet>>(contactUsMessageReplyService.getByMessage(messageId),HttpStatus.OK);

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class SchoolNewsParagraphDtoPost {
-    private Long schoolNewsId = null;
+    private Long schoolNewsId;
     private String paragraph;
     private ParagraphPhotoSort paragraphPhotoSort=ParagraphPhotoSort.PIC_LAST;
 }

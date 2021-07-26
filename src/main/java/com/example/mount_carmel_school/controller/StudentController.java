@@ -24,7 +24,7 @@ public class StudentController {
 
     @PostMapping
     public ResponseEntity<StudentDtoGet> add(@RequestBody StudentDtoPost studentDtoPost)  {
-        return new ResponseEntity<>(studentService.add(studentDtoPost),HttpStatus.CREATED);
+        return new ResponseEntity<StudentDtoGet>(studentService.add(studentDtoPost),HttpStatus.CREATED);
     }
 
     @GetMapping(path = "{id}")

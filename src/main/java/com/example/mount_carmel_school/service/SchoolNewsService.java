@@ -4,6 +4,7 @@ import com.example.mount_carmel_school.dto.DeleteResponseDto;
 
 import com.example.mount_carmel_school.dto.school_news_dto.SchoolNewsDtoGet;
 import com.example.mount_carmel_school.dto.school_news_dto.SchoolNewsDtoPost;
+import com.example.mount_carmel_school.exception.ApiRequestException;
 import com.example.mount_carmel_school.exception.NotFoundException;
 import com.example.mount_carmel_school.model.SchoolNews;
 import com.example.mount_carmel_school.model.SchoolEmployee;
@@ -70,6 +71,10 @@ public class SchoolNewsService {
     public SchoolNewsDtoGet update(Long schoolNewsId,SchoolNewsDtoPost schoolNewsDtoPost){
         SchoolEmployee schoolEmployee = schoolEmployeeRepository.findById(schoolNewsDtoPost.getPostedBy_employeeId()).orElseThrow(()->new NotFoundException("SchoolEmployee"));
         SchoolNews schoolNews = schoolNewsRepository.findById(schoolNewsId).orElseThrow(()->new NotFoundException("SchoolNews"));
+         if(schoolNewsDtoPost.getPostedBy_employeeId() != schoolNews.getSchoolEmployee().getId())
+         {
+             throw new ApiRequestException("Sorry PostedBy  Can not be updated");
+         }
         BeanUtils.copyProperties(schoolNewsDtoPost,schoolNews,"postedBy_employeeId");
         schoolNews.setSchoolEmployee(schoolEmployee);
         return new SchoolNewsDtoGet(schoolNews);

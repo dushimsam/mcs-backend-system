@@ -32,9 +32,15 @@ public class SchoolNewsParagraphPhotoService {
     public SchoolNewsParagraphPhotoDtoGet add(SchoolNewsParagraphPhotoDtoPost schoolNewsParagraphPhotoDtoPost){
         SchoolNewsParagraph schoolNewsParagraph = schoolNewsParagraphRepository.findById(schoolNewsParagraphPhotoDtoPost.getSchoolNewsParagraphId()).orElseThrow(()->new NotFoundException("School News Paragraph"));
         SchoolNewsParagraphPhoto schoolNewsParagraphPhoto = new SchoolNewsParagraphPhoto();
-        BeanUtils.copyProperties(schoolNewsParagraphPhotoDtoPost,schoolNewsParagraphPhoto);
+//        BeanUtils.copyProperties(schoolNewsParagraphPhotoDtoPost,schoolNewsParagraphPhoto,"schoolNewsParagraph");
         schoolNewsParagraphPhoto.setSchoolNewsParagraph(schoolNewsParagraph);
-        return new SchoolNewsParagraphPhotoDtoGet(schoolNewsParagraphPhotoRepository.save(schoolNewsParagraphPhoto));
+        schoolNewsParagraphPhoto.setPhotoPath(schoolNewsParagraphPhotoDtoPost.getPhotoPath());
+
+        schoolNewsParagraph.getSchoolNewsParagraphPhotos().add(schoolNewsParagraphPhoto);
+
+        SchoolNewsParagraph savedSchoolNewsPara = schoolNewsParagraphRepository.save(schoolNewsParagraph);
+        int size = savedSchoolNewsPara.getSchoolNewsParagraphPhotos().size();
+        return new SchoolNewsParagraphPhotoDtoGet(savedSchoolNewsPara.getSchoolNewsParagraphPhotos().get(size-1));
     }
 
 

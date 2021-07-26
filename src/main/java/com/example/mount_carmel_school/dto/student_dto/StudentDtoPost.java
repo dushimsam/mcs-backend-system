@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class StudentDtoPost {
-    private String rfidCode;
+    private String studentCode;
     private Long parentId;
     private String studentNames;
     private String studentClass;

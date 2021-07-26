@@ -35,7 +35,7 @@ public class ParentMessageReceiverController {
     }
 
 
-    @GetMapping(path="/read/{status}/user/{userId}")
+    @GetMapping(path="/read/status/{status}/user/{userId}")
     public ResponseEntity<List<ParentMessageReceiverDtoGet>> getAllByReadStatusUser(@PathVariable("status") boolean status,@PathVariable("userId") Long userId) {
         return new  ResponseEntity<>(parentMessageReceiverService.getAllByReadStatusUser(status,userId), HttpStatus.OK);
     }
@@ -57,9 +57,10 @@ public class ParentMessageReceiverController {
         return new ResponseEntity<ParentMessageReceiverDtoGet>(parentMessageReceiverService.add(parentMessageDtoPost),HttpStatus.CREATED);
     }
 
-//    @GetMapping(path="/user/{userId}")
-//    public ResponseEntity<List<ParentMessageReceiverDtoGet>> getByUser(@PathVariable("userId") Long id) {
-//        return new  ResponseEntity<>(parentMessageReceiverService.getAllByUser(id), HttpStatus.OK);
-//    }
+    @PutMapping(path = "/mark-as-read/{id}")
+    public ResponseEntity<ParentMessageReceiverDtoGet> markAsRead(
+            @PathVariable("id") Long id) {
+        return   new ResponseEntity<ParentMessageReceiverDtoGet>(parentMessageReceiverService.markAsRead(id),HttpStatus.OK);
+    }
 
 }

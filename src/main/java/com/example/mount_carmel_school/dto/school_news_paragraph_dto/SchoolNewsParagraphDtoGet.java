@@ -26,10 +26,15 @@ public class SchoolNewsParagraphDtoGet {
         BeanUtils.copyProperties(schoolNewsParagraph,this,"schoolNews");
 
         this.schoolNews = new SchoolNewsDtoGet(schoolNewsParagraph.getSchoolNews());
-        for(SchoolNewsParagraphPhoto item:schoolNewsParagraph.getSchoolNewsParagraphPhotos())
+
+        if(schoolNewsParagraph.getSchoolNewsParagraphPhotos() != null)
         {
-            schoolNewsParagraphPhotos.add(new SchoolNewsParagraphPhotoDtoGet(item));
+            for(SchoolNewsParagraphPhoto item:schoolNewsParagraph.getSchoolNewsParagraphPhotos())
+            {
+                schoolNewsParagraphPhotos.add(new SchoolNewsParagraphPhotoDtoGet(item,"PARAGRAPH"));
+            }
         }
+
     }
 
     public  SchoolNewsParagraphDtoGet(SchoolNewsParagraph schoolNewsParagraph,String ignore)
@@ -39,11 +44,15 @@ public class SchoolNewsParagraphDtoGet {
         if(!ignore.equals("NEWS"))
         {
             this.schoolNews = new SchoolNewsDtoGet(schoolNewsParagraph.getSchoolNews(),"PARAGRAPH");
-        }else if(!ignore.equals("PHOTO"))
+        }
+        if(!ignore.equals("PHOTO"))
         {
-            for(SchoolNewsParagraphPhoto item:schoolNewsParagraph.getSchoolNewsParagraphPhotos())
+            if(schoolNewsParagraph.getSchoolNewsParagraphPhotos() != null)
             {
-                schoolNewsParagraphPhotos.add(new SchoolNewsParagraphPhotoDtoGet(item,"PARAGRAPH"));
+                for(SchoolNewsParagraphPhoto item:schoolNewsParagraph.getSchoolNewsParagraphPhotos())
+                {
+                    schoolNewsParagraphPhotos.add(new SchoolNewsParagraphPhotoDtoGet(item,"PARAGRAPH"));
+                }
             }
         }
 

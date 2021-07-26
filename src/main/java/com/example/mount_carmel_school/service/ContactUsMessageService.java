@@ -2,6 +2,7 @@ package com.example.mount_carmel_school.service;
 
 import com.example.mount_carmel_school.dto.contact_us_message_dto.ContactUsMessageDtoGet;
 import com.example.mount_carmel_school.dto.contact_us_message_dto.ContactUsMessageDtoPost;
+import com.example.mount_carmel_school.exception.ApiRequestException;
 import com.example.mount_carmel_school.model.ContactUsMessage;
 import com.example.mount_carmel_school.repository.ContactUsMessageRepository;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,10 @@ public class ContactUsMessageService {
     public ContactUsMessageDtoGet add(ContactUsMessageDtoPost contactUsMessageDtoPost){
         ContactUsMessage contactUsMessage = new ContactUsMessage();
         BeanUtils.copyProperties(contactUsMessageDtoPost,contactUsMessage);
+//        if(contactUsMessageRepository.findContactUsMessageByEmailAndMessageAndNames(contactUsMessageDtoPost.getEmail(),contactUsMessageDtoPost.getMessage(),contactUsMessageDtoPost.getNames()) != null)
+//        {
+//            throw new ApiRequestException("DUPLICATES NOT ALLOWED");
+//        }
         return new ContactUsMessageDtoGet(contactUsMessageRepository.save(contactUsMessage));
     }
 
@@ -45,9 +50,9 @@ public class ContactUsMessageService {
     }
 
 
-    public List<ContactUsMessageDtoGet> getUnReadMessages()
+    public List<ContactUsMessageDtoGet> getByReadStatus(boolean status)
     {
-        List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findContactUsMessageByIsRead(false);
+        List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findContactUsMessageByIsRead(status);
         List<ContactUsMessageDtoGet> formattedContactUsMessages = new ArrayList<>();
 
         for(ContactUsMessage item:contactUsMessages)
@@ -57,9 +62,9 @@ public class ContactUsMessageService {
         return formattedContactUsMessages;
     }
 
-    public List<ContactUsMessageDtoGet> getUnRepliedMessages()
+    public List<ContactUsMessageDtoGet> getByRepliedStatus(boolean status)
     {
-        List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findContactUsMessageByIsReplied(false);
+        List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findContactUsMessageByIsReplied(status);
         List<ContactUsMessageDtoGet> formattedContactUsMessages = new ArrayList<>();
 
         for(ContactUsMessage item:contactUsMessages)

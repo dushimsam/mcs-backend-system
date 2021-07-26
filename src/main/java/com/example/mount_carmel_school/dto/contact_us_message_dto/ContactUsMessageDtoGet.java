@@ -16,6 +16,8 @@ public class ContactUsMessageDtoGet {
     private String names;
     private String email;
     private String message;
+    private boolean isRead;
+    private boolean isReplied;
     private List<ContactUsMessageReplyDtoGet> contactUsMessageReplyDtoGets = new ArrayList<>();
     private Date createdAt;
     private Date lastModifiedAt;
@@ -23,17 +25,21 @@ public class ContactUsMessageDtoGet {
     {
         BeanUtils.copyProperties(contactUsMessage,this,"contactUsMessageReplyDtoGets");
 
-        for(ContactUsMessageReply item:contactUsMessage.getContactUsMessageReplies())
+        if(contactUsMessage.getContactUsMessageReplies() != null)
         {
-            this.contactUsMessageReplyDtoGets.add(new ContactUsMessageReplyDtoGet(item,"MESSAGE"));
+            for(ContactUsMessageReply item:contactUsMessage.getContactUsMessageReplies())
+            {
+                this.contactUsMessageReplyDtoGets.add(new ContactUsMessageReplyDtoGet(item,"MESSAGE"));
+            }
         }
+
     }
 
     public ContactUsMessageDtoGet(ContactUsMessage contactUsMessage,String ignore)
     {
         BeanUtils.copyProperties(contactUsMessage,this,"contactUsMessageReplyDtoGets");
 
-        if(!ignore.equals("REPLY"))
+        if(!ignore.equals("REPLY") && contactUsMessage.getContactUsMessageReplies() != null)
         {
             for(ContactUsMessageReply item:contactUsMessage.getContactUsMessageReplies())
             {

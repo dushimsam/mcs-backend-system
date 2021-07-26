@@ -78,18 +78,19 @@ public class ParentPhoneService {
         return parentPhoneGets;
     }
 
-    public ParentPhoneDtoGet addPhoneToParent(ParentPhoneDtoPost parentPhonePost, Long parentId)
+    public ParentPhoneDtoGet addPhoneToParent(ParentPhoneDtoPost parentPhonePost)
     {
         ParentPhone parentPhone = new ParentPhone();
-        Parent parent = parentRepository.getById(parentId);
-        if(parent != null)
+        Parent parent = parentRepository.findById(parentPhonePost.getParentId()).orElseThrow(()->new NotFoundException("Parent"));
+        ParentPhone duplicates = parentPhoneRepository.findParentPhoneByParentAndPhone(parent,parentPhonePost.getPhone());
+
+        if(duplicates != null)
         {
+            throw new ApiRequestException("The Parent-Phone is already registered");
+        }
             BeanUtils.copyProperties(parentPhonePost,parentPhone);
             parentPhone.setParent(parent);
             return  new ParentPhoneDtoGet(parentPhoneRepository.save(parentPhone));
-        }else{
-            throw new ApiRequestException("Parent is not found");
-        }
 
     }
 

@@ -6,6 +6,7 @@ import com.example.mount_carmel_school.enums.MessageStatus;
 import com.example.mount_carmel_school.enums.MessageType;
 import com.example.mount_carmel_school.model.ParentMessage;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 import java.util.Date;
 
@@ -16,11 +17,12 @@ public class ParentMessageDtoGet {
     private String message;
     private MessageDirection messageDirection;
     private MessageStatus messageStatus;
-    private UserDtoGet user;
+    private UserDtoGet sender;
     private Date createdAt;
     private Date lastModifiedAt;
     public ParentMessageDtoGet(ParentMessage parentMessage)
     {
-        this.user = new UserDtoGet(parentMessage.getSender());
+        BeanUtils.copyProperties(parentMessage,this,"sender");
+        this.sender = new UserDtoGet(parentMessage.getSender());
     }
 }

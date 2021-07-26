@@ -29,9 +29,9 @@ public class ParentPhoneController {
         return new ResponseEntity<ParentPhoneDtoGet>(parentPhoneService.get(id),HttpStatus.OK);
     }
 
-    @PutMapping(path = "/parent/{parentId}")
-    public ResponseEntity<ParentPhoneDtoGet> addPhoneToParent(@RequestBody ParentPhoneDtoPost parentPhonePost, @PathVariable("parentId") Long parentId)  {
-        return new ResponseEntity<ParentPhoneDtoGet>(parentPhoneService.addPhoneToParent(parentPhonePost,parentId),HttpStatus.CREATED);
+    @PostMapping
+    public ResponseEntity<ParentPhoneDtoGet> addPhoneToParent(@RequestBody ParentPhoneDtoPost parentPhonePost)  {
+        return new ResponseEntity<ParentPhoneDtoGet>(parentPhoneService.addPhoneToParent(parentPhonePost),HttpStatus.CREATED);
     }
 
 

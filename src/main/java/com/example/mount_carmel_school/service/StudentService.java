@@ -40,8 +40,8 @@ public class StudentService {
         Student newStudent = new Student();
         BeanUtils.copyProperties(studentDtoPost, newStudent);
         Student savedStudent = studentRepository.save(newStudent);
-        parentService.addStudentToParent(parent.getId(),savedStudent.getId());
-        return  new StudentDtoGet(savedStudent);
+        parentService.addStudentToParent(parent.getId(), savedStudent.getId());
+        return  new StudentDtoGet(newStudent);
     }
 
 
