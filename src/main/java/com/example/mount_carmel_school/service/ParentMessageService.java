@@ -22,6 +22,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mount_carmel_school.enums.MessageDirection.FORWARD;
+import static com.example.mount_carmel_school.enums.MessageDirection.REVERSE;
+import static com.example.mount_carmel_school.enums.MessageStatus.ALL;
+import static com.example.mount_carmel_school.enums.MessageStatus.PARTICULAR;
 import static com.example.mount_carmel_school.enums.UserCategory.PARENT;
 import static com.example.mount_carmel_school.enums.UserCategory.SCHOOL_EMPLOYEE;
 
@@ -42,7 +46,7 @@ public class ParentMessageService {
     public ParentMessageDtoGet add(ParentMessageDtoPost parentMessageDtoPost){
         User user = userRepository.findById(parentMessageDtoPost.getUser_senderId()).orElseThrow(()->new NotFoundException("User Sender"));
         ParentMessage parentMessage = new ParentMessage();
-        BeanUtils.copyProperties(parentMessageDtoPost,parentMessage,"user_senderId","user_receiverId");
+        BeanUtils.copyProperties(parentMessageDtoPost,parentMessage);
         parentMessage.setSender(user);
         ParentMessage newParentMessage = parentMessageRepository.save(parentMessage);
         handleSendMessage(parentMessageDtoPost,newParentMessage);
@@ -52,17 +56,17 @@ public class ParentMessageService {
     public void handleSendMessage(ParentMessageDtoPost parentMessageDtoPost,ParentMessage newParentMessage)
     {
 
-        if(parentMessageDtoPost.getMessageStatus().equals("PARTICULAR"))
+        if(parentMessageDtoPost.getMessageStatus() == PARTICULAR)
         {
             User user = userRepository.findById(parentMessageDtoPost.getUser_receiverId()).orElseThrow(()->new NotFoundException("User Receiver"));
             saveReceiver(user,newParentMessage);
-        }else if(parentMessageDtoPost.getMessageStatus().equals("ALL")){
+        }else if(parentMessageDtoPost.getMessageStatus() == ALL){
             List<User> receiversList = new ArrayList<>();
 
-            if(parentMessageDtoPost.getMessageDirection().equals("FORWARD"))
+            if(parentMessageDtoPost.getMessageDirection() == FORWARD)
             {
                 receiversList = userRepository.findAllByCategory(PARENT);
-            }else if(parentMessageDtoPost.getMessageDirection().equals("REVERSE"))
+            }else if(parentMessageDtoPost.getMessageDirection()== REVERSE)
             {
                 receiversList = userRepository.findAllByCategory(SCHOOL_EMPLOYEE);
             }else{
@@ -103,7 +107,7 @@ public class ParentMessageService {
     }
 
 
-    public ParentMessageDtoGet update(ParentMessageDtoPost parentMessageDtoPost,Long parentMessageId){
+    public ParentMessageDtoGet update(Long parentMessageId,ParentMessageDtoPost parentMessageDtoPost){
         User user = userRepository.findById(parentMessageDtoPost.getUser_senderId()).orElseThrow(()->new NotFoundException("User Sender"));
         ParentMessage parentMessage = parentMessageRepository.findById(parentMessageId).orElseThrow(()->new NotFoundException("Parent Message"));
 
@@ -115,7 +119,7 @@ public class ParentMessageService {
             throw  new ApiRequestException("Message Type can not be updated , Delete it instead");
         }else if(parentMessage.getMessageStatus() != parentMessageDtoPost.getMessageStatus())
         {
-            if(parentMessageDtoPost.getMessageStatus() == MessageStatus.PARTICULAR)
+            if(parentMessageDtoPost.getMessageStatus() == PARTICULAR)
             {
               throw   new ApiRequestException("Message Status can not be changed from ALL TO PARTICULAR , Delete it instead");
             }else{
@@ -123,7 +127,7 @@ public class ParentMessageService {
             }
         }
 
-        BeanUtils.copyProperties(parentMessageDtoPost,parentMessage,"user_senderId","user_receiverId");
+        BeanUtils.copyProperties(parentMessageDtoPost,parentMessage);
         parentMessage.setSender(user);
         ParentMessage savedParent = parentMessageRepository.save(parentMessage);
         return new ParentMessageDtoGet(savedParent);
@@ -137,11 +141,13 @@ public class ParentMessageService {
 
 
     public  List<ParentMessageDtoGet>  getAllByUser(Long userSenderId) {
+
         User user = userRepository.findById(userSenderId).orElseThrow(()->new NotFoundException("User Sender"));
         List<ParentMessage> parentMessages = parentMessageRepository.findAllBySender(user);
         List<ParentMessageDtoGet> parentMessageDtoGetList = new ArrayList<>();
         return traverseCopy(parentMessages, parentMessageDtoGetList);
     }
+
 
     public  List<ParentMessageDtoGet> traverseCopy(List<ParentMessage> list1, List<ParentMessageDtoGet> list2)
     {

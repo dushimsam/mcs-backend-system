@@ -1,9 +1,12 @@
 package com.example.mount_carmel_school.controller;
 
+import com.example.mount_carmel_school.dto.DeleteResponseDto;
 import com.example.mount_carmel_school.dto.student_dto.StudentDtoGet;
 import com.example.mount_carmel_school.dto.student_dto.StudentDtoPost;
 import com.example.mount_carmel_school.service.StudentService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,29 +18,30 @@ public class StudentController {
     private final StudentService studentService;
 
     @GetMapping
-    public List<StudentDtoGet> getAll() {
-        return studentService.getAll();
+    public ResponseEntity<List<StudentDtoGet>> getAll() {
+        return new ResponseEntity<List<StudentDtoGet>>(studentService.getAll(), HttpStatus.OK);
     }
 
     @PostMapping
-    public StudentDtoGet add(@RequestBody StudentDtoPost studentDtoPost)  {
-        return studentService.add(studentDtoPost);
+    public ResponseEntity<StudentDtoGet> add(@RequestBody StudentDtoPost studentDtoPost)  {
+        return new ResponseEntity<>(studentService.add(studentDtoPost),HttpStatus.CREATED);
     }
 
     @GetMapping(path = "{id}")
-    public StudentDtoGet get(
+    public ResponseEntity<StudentDtoGet> get(
             @PathVariable("id") Long id) {
-        return   studentService.get(id);
+        return  new ResponseEntity<>(studentService.get(id),HttpStatus.OK);
     }
-//    @PutMapping(path="/student/{studentId}/parent/{parentId}")
-//    public StudentDtoGet addParentToStudent(
-//            @PathVariable("studentId") Long studentId, @PathVariable("parentId") Long parentId) {
-//        return   studentService.addParentToStudent(studentId,parentId);
-//    }
 
-//    @GetMapping(path = "/school/{schoolId}")
-//    public  List<StudentDtoGet> studentsFromSchool(
-//            @PathVariable("schoolId") Long schoolId) {
-//        return   studentService.studentsFromSchool(schoolId);
-//    }
+    @PutMapping(path = "{id}")
+    public ResponseEntity<StudentDtoGet> update(
+            @PathVariable("id") Long id,@RequestBody StudentDtoPost studentDtoPost) {
+        return  new ResponseEntity<StudentDtoGet>(studentService.update(id,studentDtoPost),HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<DeleteResponseDto> delete(
+            @PathVariable("id") Long id) {
+        return  new ResponseEntity<DeleteResponseDto>(studentService.delete(id),HttpStatus.OK);
+    }
 }

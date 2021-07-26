@@ -3,14 +3,13 @@ package com.example.mount_carmel_school.service;
 import com.example.mount_carmel_school.dto.parent_dto.ParentDtoGet;
 import com.example.mount_carmel_school.dto.parent_dto.ParentDtoPost;
 import com.example.mount_carmel_school.dto.parent_phone.ParentPhoneDtoPost;
+import com.example.mount_carmel_school.enums.UserCategory;
 import com.example.mount_carmel_school.exception.ApiRequestException;
+import com.example.mount_carmel_school.exception.NotFoundException;
 import com.example.mount_carmel_school.model.Parent;
 import com.example.mount_carmel_school.model.Student;
 import com.example.mount_carmel_school.model.User;
-import com.example.mount_carmel_school.repository.ParentPhoneRepository;
-import com.example.mount_carmel_school.repository.ParentRepository;
-import com.example.mount_carmel_school.repository.StudentRepository;
-import com.example.mount_carmel_school.repository.UserRepository;
+import com.example.mount_carmel_school.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +27,12 @@ public class ParentService {
     private ParentRepository parentRepository;
 
     @Autowired
+    private SchoolAdminRepository schoolAdminRepository;
+
+    @Autowired
+    private SchoolEmployeeRepository schoolEmployeeRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -40,22 +45,17 @@ public class ParentService {
     private ParentPhoneService parentPhoneService;
 
     public ParentDtoGet add(ParentDtoPost parentDtoPost)  {
-
-        User user = userRepository.findById(parentDtoPost.getUserId()).get();
-        Parent newParent = new Parent();
-
-        if(user == null)
-        {
-            throw new ApiRequestException("User Not Found");
-        }else{
-            BeanUtils.copyProperties(parentDtoPost,newParent,"userId","parentPhonePosts","schoolId");
+            User user = userRepository.findById(parentDtoPost.getUserId()).orElseThrow(()-> new NotFoundException("User"));
+            Parent newParent = new Parent();
+            verifyUser(user);
+            BeanUtils.copyProperties(parentDtoPost,newParent);
             newParent.setUser(user);
             Parent savedParent = parentRepository.save(newParent);
-            handleNewParentPhones(savedParent,parentDtoPost.getParentPhonePosts());
+            parentPhoneService.addPhoneToParent(new ParentPhoneDtoPost(parentDtoPost.getPhone()),savedParent.getId());
             return  get(savedParent.getId());
         }
 
-    }
+
 
     public void handleNewParentPhones(Parent parent,List<ParentPhoneDtoPost> parentPhonePosts)
     {
@@ -76,22 +76,74 @@ public class ParentService {
     }
 
     public ParentDtoGet get(Long id) {
-        Parent parent = parentRepository.findById(id).get();
+        Parent parent = parentRepository.findById(id).orElseThrow(() -> new NotFoundException("Parent"));
+        return new ParentDtoGet(parent);
+    }
+
+    public List<ParentDtoGet> getByStatus(String status) {
+
+        if(!status.equals("ACTIVE") && !status.equals("INACTIVE"))
+        {
+            throw  new ApiRequestException("STATUS SHOULD BE EITHER ACTIVE OR INACTIVE");
+        }
+        List<User> users = userRepository.findByIsLockedAndCategory(!status.equals("ACTIVE"), UserCategory.PARENT);
+        List<ParentDtoGet> parents = new ArrayList<>();
+
+        for(User user:users)
+        {
+            parents.add(new ParentDtoGet(parentRepository.findByUser(user)));
+        }
+        return parents;
+    }
+
+
+
+    public ParentDtoGet getByUser(Long id) {
+
+        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User"));
+        Parent parent = parentRepository.findByUser(user);
         if(parent != null)
         {
             return new ParentDtoGet(parent);
         }else{
-            throw new ApiRequestException("Parent Not Found");
+            throw new NotFoundException("Parent");
         }
     }
 
-
     public ParentDtoGet addStudentToParent(Long parentId,Long studentId)
     {
-   Parent parent = parentRepository.findById(parentId).get();
-   Student student = studentRepository.findById(studentId).get();
+   Parent parent = parentRepository.findById(parentId).orElseThrow(()-> new NotFoundException("Parent"));
+   if(parent.getUser().getIsLocked())
+   {
+       throw new ApiRequestException("The parent is not active");
+   }
+
+   Student student = studentRepository.findById(studentId).orElseThrow(()-> new NotFoundException("Student"));
+        if(parentRepository.findByStudents(student) != null)
+        {
+            throw new ApiRequestException("The Student already added on this parent");
+        }
    parent.addStudent(student);
    return new ParentDtoGet(parentRepository.save(parent));
     }
 
+    public void verifyUser(User user)
+    {
+
+        if(user.getCategory() != UserCategory.PARENT)
+        {
+            throw  new ApiRequestException("User should be a parent");
+        }
+
+         if(parentRepository.findByUser(user) != null)
+    {
+        throw  new ApiRequestException("One user can not be assigned more than one parent.");
+    }else if(schoolEmployeeRepository.findByUser(user) != null){
+             throw  new ApiRequestException("This user is assigned on the Employee.");
+    }else if(schoolAdminRepository.findByUser(user) != null)
+         {
+             throw  new ApiRequestException("This user is assigned on the Admin.");
+         }
+
+    }
 }

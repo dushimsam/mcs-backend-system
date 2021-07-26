@@ -1,5 +1,6 @@
 package com.example.mount_carmel_school.model;
 
+import com.example.mount_carmel_school.model.global.Auditable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name="parents")
-public class Parent {
+public class Parent extends Auditable<String> {
 
     @SequenceGenerator(
             name = "parents_sequence",
@@ -33,8 +34,6 @@ public class Parent {
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-
-    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "students_parents",
             joinColumns = {@JoinColumn(name = "parent_id")},

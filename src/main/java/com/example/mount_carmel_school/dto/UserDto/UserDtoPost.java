@@ -7,6 +7,7 @@ public class UserDtoPost {
     private String firstName;
     private String lastName;
     private String phone;
+    private String profile;
     private String userName;
     private String password;
     private String gender;

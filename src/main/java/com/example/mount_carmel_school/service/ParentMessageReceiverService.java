@@ -49,20 +49,38 @@ public class ParentMessageReceiverService {
     }
 
 
+
+    public List<ParentMessageReceiverDtoGet> getAllByParentMessage(Long parentMessageId)
+    {
+        ParentMessage parentMessage = messageRepository.findById(parentMessageId).orElseThrow(()->new NotFoundException("ParentMessage"));
+        List<ParentMessageReceiver> parentMessageReceivers = parentMessageReceiverRepository.findAllByParentMessage(parentMessage);
+        List<ParentMessageReceiverDtoGet> parentMessageReceiverDtoGetList = new ArrayList<>();
+        return traverseCopy(parentMessageReceivers,parentMessageReceiverDtoGetList);
+    }
+
+
     public ParentMessageReceiverDtoGet get(Long receiverId)
     {
         ParentMessageReceiver parentMessageReceiver = parentMessageReceiverRepository.findById(receiverId).orElseThrow(()-> new NotFoundException("Parent Message Receiver"));
         return  new ParentMessageReceiverDtoGet(parentMessageReceiver);
     }
 
-    List<ParentMessageReceiverDtoGet> getAllReadByStatus(boolean isRead)
+
+    public ParentMessageReceiverDtoGet markAsRead(Long receiverId)
+    {
+        ParentMessageReceiver parentMessageReceiver = parentMessageReceiverRepository.findById(receiverId).orElseThrow(()-> new NotFoundException("ParentMessageReceiver"));
+        parentMessageReceiver.setIsRead(true);
+        return  new ParentMessageReceiverDtoGet(parentMessageReceiverRepository.save(parentMessageReceiver));
+    }
+
+   public List<ParentMessageReceiverDtoGet> getAllByReadStatus(boolean isRead)
     {
         List<ParentMessageReceiver> parentMessageReceivers = parentMessageReceiverRepository.findByIsRead(isRead);
         List<ParentMessageReceiverDtoGet> parentMessageReceiverDtoGetList = new ArrayList<>();
         return traverseCopy(parentMessageReceivers,parentMessageReceiverDtoGetList);
     }
 
-    List<ParentMessageReceiverDtoGet> getAllReadByStatusUser(boolean isRead,Long receiverId)
+  public  List<ParentMessageReceiverDtoGet> getAllByReadStatusUser(boolean isRead,Long receiverId)
     {
         User user = userRepository.findById(receiverId).orElseThrow(()->new NotFoundException("User Receiver"));
         List<ParentMessageReceiver> parentMessageReceivers = parentMessageReceiverRepository.findByIsReadAndReceiver(isRead,user);

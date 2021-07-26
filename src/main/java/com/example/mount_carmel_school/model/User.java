@@ -1,6 +1,7 @@
 package com.example.mount_carmel_school.model;
 
 import com.example.mount_carmel_school.enums.UserCategory;
+import com.example.mount_carmel_school.model.global.Auditable;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,7 @@ import java.util.Collections;
 @Entity
 @Table(name="users")
 
-public class User implements UserDetails {
+public class User extends Auditable<String> implements UserDetails{
     @SequenceGenerator(
             name = "user_sequence",
             sequenceName = "user_sequence"

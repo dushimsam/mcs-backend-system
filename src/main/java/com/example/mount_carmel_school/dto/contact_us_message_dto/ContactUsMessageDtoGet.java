@@ -6,6 +6,8 @@ import com.example.mount_carmel_school.model.ContactUsMessageReply;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -14,14 +16,30 @@ public class ContactUsMessageDtoGet {
     private String names;
     private String email;
     private String message;
-    private List<ContactUsMessageReplyDtoGet> contactUsMessageReplyDtoGets;
+    private List<ContactUsMessageReplyDtoGet> contactUsMessageReplyDtoGets = new ArrayList<>();
+    private Date createdAt;
+    private Date lastModifiedAt;
     public ContactUsMessageDtoGet(ContactUsMessage contactUsMessage)
     {
         BeanUtils.copyProperties(contactUsMessage,this,"contactUsMessageReplyDtoGets");
 
         for(ContactUsMessageReply item:contactUsMessage.getContactUsMessageReplies())
         {
-            this.contactUsMessageReplyDtoGets.add(new ContactUsMessageReplyDtoGet(item));
+            this.contactUsMessageReplyDtoGets.add(new ContactUsMessageReplyDtoGet(item,"MESSAGE"));
         }
+    }
+
+    public ContactUsMessageDtoGet(ContactUsMessage contactUsMessage,String ignore)
+    {
+        BeanUtils.copyProperties(contactUsMessage,this,"contactUsMessageReplyDtoGets");
+
+        if(!ignore.equals("REPLY"))
+        {
+            for(ContactUsMessageReply item:contactUsMessage.getContactUsMessageReplies())
+            {
+                this.contactUsMessageReplyDtoGets.add(new ContactUsMessageReplyDtoGet(item,"MESSAGE"));
+            }
+        }
+
     }
 }

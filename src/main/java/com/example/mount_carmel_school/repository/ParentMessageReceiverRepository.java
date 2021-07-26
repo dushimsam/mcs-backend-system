@@ -13,4 +13,5 @@ public interface ParentMessageReceiverRepository extends JpaRepository<ParentMes
         public List<ParentMessageReceiver> findByIsReadAndReceiver(boolean isRead, User receiver);
         public List<ParentMessageReceiver> findByIsRead(boolean isRead);
         public List<ParentMessageReceiver> findAllByReceiver(User receiver);
+        public List<ParentMessageReceiver> findAllByParentMessage(ParentMessage parentMessage);
 }

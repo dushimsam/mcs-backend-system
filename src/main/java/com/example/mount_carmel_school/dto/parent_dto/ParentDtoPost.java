@@ -9,5 +9,5 @@ public class ParentDtoPost {
     private String residence;
     private Long userId;
     private Long schoolId;
-    private List<ParentPhoneDtoPost> parentPhonePosts;
+    private String phone;
 }

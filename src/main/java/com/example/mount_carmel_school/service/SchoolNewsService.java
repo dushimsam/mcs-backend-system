@@ -46,7 +46,7 @@ public class SchoolNewsService {
     public SchoolNewsDtoGet add(SchoolNewsDtoPost schoolNewsDtoPost){
         SchoolEmployee schoolEmployee = schoolEmployeeRepository.findById(schoolNewsDtoPost.getPostedBy_employeeId()).orElseThrow(()->new NotFoundException("SchoolEmployee"));
         SchoolNews schoolNews = new SchoolNews();
-        BeanUtils.copyProperties(schoolNewsDtoPost,schoolNews,"postedBy_employeeId");
+        BeanUtils.copyProperties(schoolNewsDtoPost,schoolNews);
         schoolNews.setSchoolEmployee(schoolEmployee);
         SchoolNews newSchoolNews = schoolNewsRepository.save(schoolNews);
         return new SchoolNewsDtoGet(newSchoolNews);
@@ -67,7 +67,7 @@ public class SchoolNewsService {
     }
 
 
-    public SchoolNewsDtoGet update(SchoolNewsDtoPost schoolNewsDtoPost,Long schoolNewsId){
+    public SchoolNewsDtoGet update(Long schoolNewsId,SchoolNewsDtoPost schoolNewsDtoPost){
         SchoolEmployee schoolEmployee = schoolEmployeeRepository.findById(schoolNewsDtoPost.getPostedBy_employeeId()).orElseThrow(()->new NotFoundException("SchoolEmployee"));
         SchoolNews schoolNews = schoolNewsRepository.findById(schoolNewsId).orElseThrow(()->new NotFoundException("SchoolNews"));
         BeanUtils.copyProperties(schoolNewsDtoPost,schoolNews,"postedBy_employeeId");

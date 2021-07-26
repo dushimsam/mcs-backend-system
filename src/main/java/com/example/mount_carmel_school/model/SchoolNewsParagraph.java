@@ -2,6 +2,7 @@ package com.example.mount_carmel_school.model;
 
 
 import com.example.mount_carmel_school.enums.ParagraphPhotoSort;
+import com.example.mount_carmel_school.model.global.Auditable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name="school_news_paragraphs")
-public class SchoolNewsParagraph {
+public class SchoolNewsParagraph extends Auditable<String> {
     @SequenceGenerator(
             name = "school_news_sequence",
             sequenceName = "school_news_sequence"
@@ -32,6 +33,7 @@ public class SchoolNewsParagraph {
 
     @NotNull
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ParagraphPhotoSort paragraphPhotoSort = ParagraphPhotoSort.PIC_LAST;
 
     @NotNull

@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public class StudentDtoPost {
     private String rfidCode;
-    private Long userId;
-    private List<Long> parents;
+    private Long parentId;
+    private String studentNames;
+    private String studentClass;
 }

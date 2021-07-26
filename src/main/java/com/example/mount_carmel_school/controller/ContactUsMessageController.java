@@ -7,6 +7,8 @@ import com.example.mount_carmel_school.dto.parent_dto.ParentDtoPost;
 import com.example.mount_carmel_school.service.ContactUsMessageService;
 import com.example.mount_carmel_school.service.ParentService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,38 +20,38 @@ public class ContactUsMessageController {
     private final ContactUsMessageService contactUsMessageService;
 
     @GetMapping
-    public List<ContactUsMessageDtoGet>  getAll() {
-        return contactUsMessageService.getAll();
+    public ResponseEntity<List<ContactUsMessageDtoGet>> getAll() {
+        return new  ResponseEntity<List<ContactUsMessageDtoGet>>(contactUsMessageService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping
-    public List<ContactUsMessageDtoGet>  getUnRead() {
-        return contactUsMessageService.getUnReadMessages();
+    @GetMapping("/unread")
+    public ResponseEntity<List<ContactUsMessageDtoGet>>  getUnRead() {
+        return new ResponseEntity<List<ContactUsMessageDtoGet>>(contactUsMessageService.getUnReadMessages(),HttpStatus.OK);
     }
 
 
     @GetMapping(path = "{id}")
-    public ContactUsMessageDtoGet get(
+    public ResponseEntity<ContactUsMessageDtoGet> get(
             @PathVariable("id") Long id) {
-        return   contactUsMessageService.get(id);
+        return   new ResponseEntity<ContactUsMessageDtoGet>(contactUsMessageService.get(id),HttpStatus.OK);
     }
 
     @GetMapping(path = "/un-replied")
-    public List<ContactUsMessageDtoGet>  getUnRepliedMessages() {
-        return   contactUsMessageService.getUnRepliedMessages();
+    public ResponseEntity<List<ContactUsMessageDtoGet>>  getUnRepliedMessages() {
+        return   new ResponseEntity<List<ContactUsMessageDtoGet>>(contactUsMessageService.getUnRepliedMessages(),HttpStatus.OK);
     }
 
 
     @PostMapping
-    public ContactUsMessageDtoGet add(@RequestBody ContactUsMessageDtoPost contactUsMessageDtoPost)  {
-        return contactUsMessageService.add(contactUsMessageDtoPost);
+    public ResponseEntity<ContactUsMessageDtoGet> add(@RequestBody ContactUsMessageDtoPost contactUsMessageDtoPost)  {
+        return new ResponseEntity<ContactUsMessageDtoGet>(contactUsMessageService.add(contactUsMessageDtoPost),HttpStatus.CREATED);
     }
 
 
     @PutMapping(path = "/mark-as-read/{id}")
-    public ContactUsMessageDtoGet markAsRead(
+    public ResponseEntity<ContactUsMessageDtoGet>  markAsRead(
             @PathVariable("id") Long id) {
-        return   contactUsMessageService.markAsRead(id);
+        return   new ResponseEntity<ContactUsMessageDtoGet>(contactUsMessageService.markAsRead(id),HttpStatus.OK);
     }
 
 }

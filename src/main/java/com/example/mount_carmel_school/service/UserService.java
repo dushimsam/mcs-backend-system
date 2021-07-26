@@ -1,5 +1,6 @@
 package com.example.mount_carmel_school.service;
 
+import com.example.mount_carmel_school.dto.DeleteResponseDto;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoGet;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoPost;
 import com.example.mount_carmel_school.exception.ApiRequestException;
@@ -102,6 +103,40 @@ public class UserService implements UserDetailsService {
         }
 
     }
+
+    public UserDtoGet update(UserDtoPost userDtoPost,Long userId)
+    {
+        User user =userRepository.findById(userId).orElseThrow(()->new NotFoundException("User"));
+
+        if (userRepository.findByEmail(userDtoPost.getEmail()) != null) {
+            throw new ApiRequestException("email already taken");
+        }
+        if (userRepository.findByUserName(userDtoPost.getUserName()) != null) {
+            throw new ApiRequestException("username already taken");
+        }
+        if(userDtoPost.getProfile() == null || userDtoPost.getProfile().equals(""))
+        {
+            throw  new ApiRequestException("Profile can not be null");
+        }
+
+        boolean isValidEmail = emailValidator. test(userDtoPost.getEmail());
+
+        if (!isValidEmail) {
+            throw new ApiRequestException("email not valid");
+        }
+
+        BeanUtils.copyProperties(userDtoPost,user,"password");
+        user.setUserName(userDtoPost.getUserName());
+        return new UserDtoGet(user);
+    }
+
+    public DeleteResponseDto disableUnDisable(Long userId)
+    {
+        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("User"));
+        user.setIsLocked(!user.getIsLocked());
+        return new DeleteResponseDto(user.getIsLocked() ? "ACCOUNT LOCKED SUCCESSFULLY":"ACCOUNT UNLOCKED SUCCESSFULLY",new UserDtoGet(userRepository.save(user)));
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {

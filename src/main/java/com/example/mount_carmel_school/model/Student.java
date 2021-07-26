@@ -1,4 +1,5 @@
 package com.example.mount_carmel_school.model;
+import com.example.mount_carmel_school.model.global.Auditable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,9 +15,13 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name="students")
-public class Student {
+public class Student extends Auditable<String> {
+    @SequenceGenerator(
+            name = "students_sequence",
+            sequenceName = "students_sequence"
+    )
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "students_sequence")
     private Long id;
 
     @NotNull

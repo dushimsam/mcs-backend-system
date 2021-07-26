@@ -1,5 +1,6 @@
 package com.example.mount_carmel_school.model;
 
+import com.example.mount_carmel_school.model.global.Auditable;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="parent_message_receivers")
-public class ParentMessageReceiver {
+public class ParentMessageReceiver extends Auditable<String> {
 
     @SequenceGenerator(
             name = "parent_message_receivers_sequence",
@@ -23,7 +24,7 @@ public class ParentMessageReceiver {
     private Long id;
 
     @NotNull
-    private Boolean isRead;
+    private Boolean isRead = false;
 
     @NotNull
     @ManyToOne

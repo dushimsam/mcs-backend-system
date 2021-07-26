@@ -11,6 +11,7 @@ import com.example.mount_carmel_school.model.SchoolNewsParagraphPhoto;
 import com.example.mount_carmel_school.repository.SchoolNewsParagraphRepository;
 import com.example.mount_carmel_school.repository.SchoolNewsRepository;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Service
+@Data
 public class SchoolNewsParagraphService {
 
     @Autowired
@@ -44,7 +46,7 @@ public class SchoolNewsParagraphService {
         return new SchoolNewsParagraphDtoGet(schoolNewsParagraph);
     }
 
-    public SchoolNewsParagraphDtoGet update(SchoolNewsParagraphDtoPost schoolNewsParagraphDtoPost,Long paragraphId)
+    public SchoolNewsParagraphDtoGet update(Long paragraphId,SchoolNewsParagraphDtoPost schoolNewsParagraphDtoPost)
     {
         SchoolNews schoolNews = schoolNewsRepository.findById(schoolNewsParagraphDtoPost.getSchoolNewsId()).orElseThrow(()->new NotFoundException("School News"));
         SchoolNewsParagraph schoolNewsParagraph = schoolNewsParagraphRepository.findById(paragraphId).orElseThrow(()->new NotFoundException("School News Paragraph"));
@@ -60,7 +62,7 @@ public class SchoolNewsParagraphService {
       return  traverseCopy(list1,list2);
     }
 
-    public List<SchoolNewsParagraphDtoGet> findAllSchoolNews(Long schoolNewsId)
+    public List<SchoolNewsParagraphDtoGet> getAllBySchoolNews(Long schoolNewsId)
     {
         SchoolNews schoolNews = schoolNewsRepository.findById(schoolNewsId).orElseThrow(()->new NotFoundException("School News"));
         List<SchoolNewsParagraph> list1 = schoolNewsParagraphRepository.findAllBySchoolNews(schoolNews);

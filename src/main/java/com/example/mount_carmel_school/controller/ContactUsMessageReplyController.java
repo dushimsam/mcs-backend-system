@@ -8,6 +8,8 @@ import com.example.mount_carmel_school.model.ContactUsMessageReply;
 import com.example.mount_carmel_school.service.ContactUsMessageReplyService;
 import com.example.mount_carmel_school.service.ContactUsMessageService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,34 +21,33 @@ public class ContactUsMessageReplyController {
     private final ContactUsMessageReplyService contactUsMessageReplyService;
 
     @GetMapping
-    public List<ContactUsMessageReplyDtoGet> getAll() {
-        return contactUsMessageReplyService.getAll();
+    public ResponseEntity<List<ContactUsMessageReplyDtoGet>> getAll() {
+        return new ResponseEntity<List<ContactUsMessageReplyDtoGet>>(contactUsMessageReplyService.getAll(), HttpStatus.OK);
     }
 
 
     @GetMapping(path = "{id}")
-    public ContactUsMessageReplyDtoGet get(
+    public ResponseEntity<ContactUsMessageReplyDtoGet> get(
             @PathVariable("id") Long id) {
-        return   contactUsMessageReplyService.get(id);
+        return   new ResponseEntity<ContactUsMessageReplyDtoGet>(contactUsMessageReplyService.get(id),HttpStatus.OK);
     }
 
     @PostMapping
-    public ContactUsMessageReplyDtoGet add(@RequestBody ContactUsMessageReplyDtoPost contactUsMessageReplyDtoPost)  {
-        return contactUsMessageReplyService.add(contactUsMessageReplyDtoPost);
+    public ResponseEntity<ContactUsMessageReplyDtoGet> add(@RequestBody ContactUsMessageReplyDtoPost contactUsMessageReplyDtoPost)  {
+        return new ResponseEntity<ContactUsMessageReplyDtoGet>(contactUsMessageReplyService.add(contactUsMessageReplyDtoPost),HttpStatus.CREATED);
     }
 
 
-
     @GetMapping (path = "/massage/{messageId}")
-    public List<ContactUsMessageReplyDtoGet> getByMessage(
+    public ResponseEntity<List<ContactUsMessageReplyDtoGet>> getByMessage(
             @PathVariable("messageId") Long messageId) {
-        return   contactUsMessageReplyService.getByMessage(messageId);
+        return  new  ResponseEntity<List<ContactUsMessageReplyDtoGet>>(contactUsMessageReplyService.getByMessage(messageId),HttpStatus.OK);
     }
 
 
     @PutMapping(path = "{id}")
-    public ContactUsMessageReplyDtoGet getByMessage(
+    public ResponseEntity<ContactUsMessageReplyDtoGet> update(
             @PathVariable("id") Long id,@RequestBody ContactUsMessageReplyDtoPost contactUsMessageReplyDtoPost) {
-        return   contactUsMessageReplyService.update(id,contactUsMessageReplyDtoPost);
+        return  new ResponseEntity<ContactUsMessageReplyDtoGet>(contactUsMessageReplyService.update(id,contactUsMessageReplyDtoPost),HttpStatus.OK);
     }
 }

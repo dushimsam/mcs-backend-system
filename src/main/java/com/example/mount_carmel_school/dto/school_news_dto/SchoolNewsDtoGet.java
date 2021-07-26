@@ -6,6 +6,8 @@ import com.example.mount_carmel_school.model.SchoolNewsParagraph;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -13,7 +15,9 @@ public class SchoolNewsDtoGet {
     private Long id;
     private String title;
     private String mainPicPath;
-    private List<SchoolNewsParagraphDtoGet> schoolNewsParagraphs;
+    private List<SchoolNewsParagraphDtoGet> schoolNewsParagraphs = new ArrayList<>();
+    private Date createdAt;
+    private Date lastModifiedAt;
     public SchoolNewsDtoGet(SchoolNews schoolNews)
     {
         BeanUtils.copyProperties(schoolNews,this,"schoolNewsParagraphs");
@@ -21,6 +25,20 @@ public class SchoolNewsDtoGet {
         {
             this.schoolNewsParagraphs.add(new SchoolNewsParagraphDtoGet(item));
         }
+
+    }
+
+    public SchoolNewsDtoGet(SchoolNews schoolNews,String ignore)
+    {
+        BeanUtils.copyProperties(schoolNews,this,"schoolNewsParagraphs");
+
+        if(!ignore.equals("PARAGRAPH")){
+            for(SchoolNewsParagraph item:schoolNews.getSchoolNewsParagraphs())
+            {
+                this.schoolNewsParagraphs.add(new SchoolNewsParagraphDtoGet(item,"NEWS"));
+            }
+        }
+
 
     }
 }

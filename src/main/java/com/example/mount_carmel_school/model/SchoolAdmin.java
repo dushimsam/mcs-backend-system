@@ -1,5 +1,6 @@
 package com.example.mount_carmel_school.model;
 
+import com.example.mount_carmel_school.model.global.Auditable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="school_admins")
-public class SchoolAdmin {
+public class SchoolAdmin extends Auditable<String> {
     @SequenceGenerator(
             name = "school_admins_sequence",
             sequenceName = "school_admins_sequence"

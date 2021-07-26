@@ -76,7 +76,7 @@ public class SchoolNewsParagraphPhotoService {
         return new DeleteResponseDto("PICTURE DELETED SUCCESSFULLY");
     }
 
-    public SchoolNewsParagraphPhotoDtoGet update(SchoolNewsParagraphPhotoDtoPost schoolNewsParagraphPhotoDtoPost,Long paragraphPhotoId){
+    public SchoolNewsParagraphPhotoDtoGet update(Long paragraphPhotoId,SchoolNewsParagraphPhotoDtoPost schoolNewsParagraphPhotoDtoPost){
         SchoolNewsParagraphPhoto schoolNewsParagraphPhoto = schoolNewsParagraphPhotoRepository.findById(paragraphPhotoId).orElseThrow(()->new NotFoundException("School News Paragraph Photo"));
         SchoolNewsParagraph schoolNewsParagraph = schoolNewsParagraphRepository.findById(schoolNewsParagraphPhotoDtoPost.getSchoolNewsParagraphId()).orElseThrow(()->new NotFoundException("School News Paragraph"));
         BeanUtils.copyProperties(schoolNewsParagraphPhotoDtoPost,schoolNewsParagraphPhoto);

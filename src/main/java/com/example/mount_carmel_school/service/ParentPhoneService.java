@@ -1,8 +1,10 @@
 package com.example.mount_carmel_school.service;
 
+import com.example.mount_carmel_school.dto.DeleteResponseDto;
 import com.example.mount_carmel_school.dto.parent_phone.ParentPhoneDtoGet;
 import com.example.mount_carmel_school.dto.parent_phone.ParentPhoneDtoPost;
 import com.example.mount_carmel_school.exception.ApiRequestException;
+import com.example.mount_carmel_school.exception.NotFoundException;
 import com.example.mount_carmel_school.model.Parent;
 import com.example.mount_carmel_school.model.ParentPhone;
 import com.example.mount_carmel_school.repository.ParentPhoneRepository;
@@ -37,6 +39,31 @@ public class ParentPhoneService {
             BeanUtils.copyProperties(parentPhonePost,parentPhone);
            return new ParentPhoneDtoGet(parentPhoneRepository.save(parentPhone));
         }
+    }
+
+
+    public ParentPhoneDtoGet update(Long parentPhoneId,ParentPhoneDtoPost parentPhonePost)
+    {
+        ParentPhone parentPhone = parentPhoneRepository.findById(parentPhoneId).orElseThrow(()-> new NotFoundException("Parent phone"));
+        BeanUtils.copyProperties(parentPhonePost,parentPhone);
+        return new ParentPhoneDtoGet(parentPhoneRepository.save(parentPhone));
+
+    }
+
+
+
+
+    public ParentPhoneDtoGet get(Long phoneId)
+    {
+       ParentPhone parentPhone = parentPhoneRepository.findById(phoneId).orElseThrow(()-> new NotFoundException("Parent phone"));
+       return new ParentPhoneDtoGet(parentPhone);
+    }
+
+    public DeleteResponseDto delete(Long phoneId)
+    {
+        ParentPhone parentPhone = parentPhoneRepository.findById(phoneId).orElseThrow(()-> new NotFoundException("Parent phone"));
+        parentPhoneRepository.delete(parentPhone);
+        return new DeleteResponseDto(parentPhone);
     }
 
 

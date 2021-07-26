@@ -7,6 +7,8 @@ import com.example.mount_carmel_school.enums.MessageType;
 import com.example.mount_carmel_school.model.ParentMessage;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class ParentMessageDtoGet {
     private Long id;
@@ -15,7 +17,8 @@ public class ParentMessageDtoGet {
     private MessageDirection messageDirection;
     private MessageStatus messageStatus;
     private UserDtoGet user;
-
+    private Date createdAt;
+    private Date lastModifiedAt;
     public ParentMessageDtoGet(ParentMessage parentMessage)
     {
         this.user = new UserDtoGet(parentMessage.getSender());

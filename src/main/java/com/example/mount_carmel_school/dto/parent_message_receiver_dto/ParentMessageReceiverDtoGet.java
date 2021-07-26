@@ -8,6 +8,8 @@ import com.example.mount_carmel_school.model.User;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 
+import java.util.Date;
+
 @Data
 public class ParentMessageReceiverDtoGet {
 
@@ -15,7 +17,8 @@ public class ParentMessageReceiverDtoGet {
     private Boolean isRead;
     private ParentMessageDtoGet parentMessageDtoGet;
     private UserDtoGet receiver;
-
+    private Date createdAt;
+    private Date lastModifiedAt;
     public ParentMessageReceiverDtoGet(ParentMessageReceiver parentMessageReceiver)
     {
         BeanUtils.copyProperties(parentMessageReceiver,this,"receiver","parentMessageDtoGet");

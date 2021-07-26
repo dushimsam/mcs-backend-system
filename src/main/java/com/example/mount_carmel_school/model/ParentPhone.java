@@ -1,5 +1,6 @@
 package com.example.mount_carmel_school.model;
 
+import com.example.mount_carmel_school.model.global.Auditable;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="parent_phones")
-public class ParentPhone {
+public class ParentPhone extends Auditable<String> {
     @Id
     @GeneratedValue
     private Long id;
