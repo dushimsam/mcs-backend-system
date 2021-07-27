@@ -92,7 +92,7 @@ public class SchoolAdminService {
         if(schoolAdminRepository.findByUser(user) != null)
         {
             throw  new ApiRequestException("One user can not be assigned more than one admin.");
-        }else if(parentRepository.findByUser(user) != null){
+        }else if(parentRepository.findParentByUser(user) != null){
             throw  new ApiRequestException("This user is assigned on the Parent.");
         }else if(schoolEmployeeRepository.findByUser(user) != null)
         {

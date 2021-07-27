@@ -21,6 +21,8 @@ public class UserDtoGet {
     private String userName;
     private String gender;
     private String email;
+    private Boolean isLocked;
+    private Boolean isConfirmed;
     private UserCategory category;
     private Date createdAt;
     private Date lastModifiedAt;

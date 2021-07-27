@@ -84,6 +84,12 @@ public class UserService implements UserDetailsService {
         }
     }
 
+
+    public User getByUsername(String username)
+    {
+        return userRepository.findByUserName(username);
+    }
+
     public ResponseEntity<Object> changeProfile(MultipartFile file, Long userId){
         User user = userRepository.findById(userId).get();
         if(user != null)

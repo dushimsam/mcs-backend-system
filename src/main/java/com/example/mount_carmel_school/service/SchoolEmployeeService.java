@@ -1,7 +1,6 @@
 package com.example.mount_carmel_school.service;
 
 
-import com.example.mount_carmel_school.dto.parent_dto.ParentDtoGet;
 import com.example.mount_carmel_school.dto.school_employee_dto.SchoolEmployeeDtoGet;
 import com.example.mount_carmel_school.dto.school_employee_dto.SchoolEmployeeDtoPost;
 import com.example.mount_carmel_school.enums.UserCategory;
@@ -114,7 +113,7 @@ public class SchoolEmployeeService {
         if(employeeRepository.findByUser(user) != null)
         {
             throw  new ApiRequestException("One user can not be assigned more than one employee.");
-        }else if(parentRepository.findByUser(user) != null){
+        }else if(parentRepository.findParentByUser(user) != null){
             throw  new ApiRequestException("This user is assigned on the Parent.");
         }else if(schoolAdminRepository.findByUser(user) != null)
         {
@@ -129,7 +128,7 @@ public class SchoolEmployeeService {
         {
             throw  new ApiRequestException("STATUS SHOULD BE EITHER ACTIVE OR INACTIVE");
         }
-        List<User> users = userRepository.findByIsLockedAndCategory(!status.equals("ACTIVE"), UserCategory.SCHOOL_EMPLOYEE);
+        List<User> users = userRepository.findAllByIsLockedAndCategory(!status.equals("ACTIVE"), UserCategory.SCHOOL_EMPLOYEE);
         List<SchoolEmployeeDtoGet> employees = new ArrayList<>();
 
         for(User user:users)

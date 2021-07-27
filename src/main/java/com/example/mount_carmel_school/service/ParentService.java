@@ -94,12 +94,12 @@ public class ParentService {
         {
             throw  new ApiRequestException("STATUS SHOULD BE EITHER ACTIVE OR INACTIVE");
         }
-        List<User> users = userRepository.findByIsLockedAndCategory(!status.equals("ACTIVE"), UserCategory.PARENT);
+        List<User> users = userRepository.findAllByIsLockedAndCategory(false,UserCategory.PARENT);
         List<ParentDtoGet> parents = new ArrayList<>();
 
         for(User user:users)
         {
-            parents.add(new ParentDtoGet(parentRepository.findByUser(user)));
+            parents.add(new ParentDtoGet(parentRepository.findParentByUser(user)));
         }
         return parents;
     }
@@ -109,7 +109,7 @@ public class ParentService {
     public ParentDtoGet getByUser(Long id) {
 
         User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User"));
-        Parent parent = parentRepository.findByUser(user);
+        Parent parent = parentRepository.findParentByUser(user);
         if(parent != null)
         {
             return new ParentDtoGet(parent);
@@ -143,7 +143,7 @@ public class ParentService {
             throw  new ApiRequestException("User should be a parent");
         }
 
-         if(parentRepository.findByUser(user) != null)
+         if(parentRepository.findParentByUser(user) != null)
     {
         throw  new ApiRequestException("One user can not be assigned more than one parent.");
     }else if(schoolEmployeeRepository.findByUser(user) != null){

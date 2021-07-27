@@ -11,5 +11,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public User findByEmail(String email);
     public User findByUserName(String username);
     public List<User> findAllByCategory(UserCategory category);
-    public List<User> findByIsLockedAndCategory(boolean isLocked,UserCategory category);
+    public List<User> findAllByIsLockedAndCategory(boolean isLocked, UserCategory category);
 }

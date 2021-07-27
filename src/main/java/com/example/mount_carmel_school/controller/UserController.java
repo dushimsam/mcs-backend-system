@@ -6,6 +6,7 @@ import com.example.mount_carmel_school.dto.UserDto.UserDtoGet;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoPost;
 import com.example.mount_carmel_school.dto.auth_dto.AuthRequest;
 import com.example.mount_carmel_school.dto.auth_dto.AuthResponse;
+import com.example.mount_carmel_school.model.User;
 import com.example.mount_carmel_school.service.UserService;
 import com.example.mount_carmel_school.util.JwtUtil;
 import lombok.AllArgsConstructor;
@@ -62,7 +63,25 @@ public class UserController {
         } catch (Exception ex) {
             throw new Exception("Invalid userName/password");
         }
-        return new ResponseEntity<AuthResponse>(new AuthResponse(jwtUtil.generateToken(authRequest.getUserName())),HttpStatus.OK) ;
+
+
+
+        User user = userService.getByUsername(authRequest.getUserName());
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\"id\" :");
+        builder.append(user.getId());
+        builder.append(", \"firstName\" :");
+        builder.append(user.getFirstName());
+        builder.append(", \"lastName\" :");
+        builder.append(user.getLastName());
+        builder.append(", \"category\" :");
+        builder.append(user.getLastName());
+        builder.append(", \"email\" :");
+        builder.append(user.getEmail());
+        builder.append("}");
+
+        return new ResponseEntity<AuthResponse>(new AuthResponse(jwtUtil.generateToken(builder.toString())),HttpStatus.OK) ;
     }
 
     @PutMapping("change-profile/{userId}")
