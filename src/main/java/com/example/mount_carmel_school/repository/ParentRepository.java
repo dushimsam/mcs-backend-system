@@ -11,6 +11,5 @@ import java.util.List;
 @Repository
 public interface ParentRepository extends JpaRepository<Parent,Long> {
   public Parent findParentByUser(User user);
-
   public Parent findByStudents(Student student);
 }
