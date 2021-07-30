@@ -5,9 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class AuthRequest {
-    private String login;
-    private String password;
+@AllArgsConstructor
+public class PasswordChangeResponse {
+    private String message;
+    private Object user;
 }

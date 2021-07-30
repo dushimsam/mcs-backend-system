@@ -64,7 +64,7 @@ public class ContactUsMessageService {
 
     public List<ContactUsMessageDtoGet> getByRepliedStatus(boolean status)
     {
-        List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findContactUsMessageByIsReplied(status);
+        List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findContactUsMessageByIsRepliedAndIsRead(status,true);
         List<ContactUsMessageDtoGet> formattedContactUsMessages = new ArrayList<>();
 
         for(ContactUsMessage item:contactUsMessages)

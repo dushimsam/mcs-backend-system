@@ -3,6 +3,8 @@ package com.example.mount_carmel_school.service;
 import com.example.mount_carmel_school.dto.DeleteResponseDto;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoGet;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoPost;
+import com.example.mount_carmel_school.dto.auth_dto.PasswordChangeRequest;
+import com.example.mount_carmel_school.dto.auth_dto.PasswordChangeResponse;
 import com.example.mount_carmel_school.exception.ApiRequestException;
 import com.example.mount_carmel_school.exception.NotFoundException;
 import com.example.mount_carmel_school.model.User;
@@ -85,9 +87,14 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public User getByUsername(String username)
+    public UserDtoGet getByUsername(String username)
     {
-        return userRepository.findByUserName(username);
+        return new UserDtoGet(userRepository.findByUserName(username));
+    }
+
+    public UserDtoGet getByEmail(String email)
+    {
+        return new UserDtoGet(userRepository.findByEmail(email));
     }
 
     public ResponseEntity<Object> changeProfile(MultipartFile file, Long userId){
@@ -134,6 +141,19 @@ public class UserService implements UserDetailsService {
         BeanUtils.copyProperties(userDtoPost,user,"password");
         user.setUserName(userDtoPost.getUserName());
         return new UserDtoGet(user);
+    }
+
+
+    public PasswordChangeResponse changePassword(Long userId, PasswordChangeRequest passwordChangeRequest)
+    {
+        User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User"));
+
+        String curr_password = bCryptPasswordEncoder.encode(passwordChangeRequest.getCurrent_password());
+        if(curr_password.equals(user.getPassword()))
+        {
+            user.setPassword(bCryptPasswordEncoder.encode(passwordChangeRequest.getNew_password()));
+        }
+       return new PasswordChangeResponse("PASSWORD CHANGED SUCCESSFULLY",new UserDtoGet(user));
     }
 
     public DeleteResponseDto disableUnDisable(Long userId)
