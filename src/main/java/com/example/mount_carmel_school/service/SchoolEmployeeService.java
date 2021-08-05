@@ -33,8 +33,8 @@ public class SchoolEmployeeService {
     @Autowired
     private ParentRepository parentRepository;
 
-    @Autowired
-    private SchoolAdminRepository schoolAdminRepository;
+//    @Autowired
+//    private SchoolAdminRepository schoolAdminRepository;
 
 
     public SchoolEmployeeDtoGet add(SchoolEmployeeDtoPost schoolEmployeeDtoPost)  {
@@ -43,10 +43,9 @@ public class SchoolEmployeeService {
 
         SchoolEmployee schoolEmployee = new SchoolEmployee();
 
-            verifyUser(user);
-
-            BeanUtils.copyProperties(schoolEmployeeDtoPost, schoolEmployee,"userId");
-            schoolEmployee.setUser(user);
+        verifyUser(user);
+        BeanUtils.copyProperties(schoolEmployeeDtoPost, schoolEmployee);
+        schoolEmployee.setUser(user);
             return  new SchoolEmployeeDtoGet(employeeRepository.save(schoolEmployee));
 
     }
@@ -105,9 +104,9 @@ public class SchoolEmployeeService {
     public void verifyUser(User user)
     {
 
-        if(user.getCategory() != UserCategory.SCHOOL_EMPLOYEE)
+        if(user.getCategory() != UserCategory.SCHOOL_ADMIN && user.getCategory() != UserCategory.SCHOOL_EMPLOYEE)
         {
-            throw  new ApiRequestException("User should be a SCHOOL_EMPLOYEE");
+            throw  new ApiRequestException("User should be a SCHOOL_EMPLOYEE OR SCHOOL_ADMIN");
         }
 
         if(employeeRepository.findByUser(user) != null)
@@ -115,9 +114,6 @@ public class SchoolEmployeeService {
             throw  new ApiRequestException("One user can not be assigned more than one employee.");
         }else if(parentRepository.findParentByUser(user) != null){
             throw  new ApiRequestException("This user is assigned on the Parent.");
-        }else if(schoolAdminRepository.findByUser(user) != null)
-        {
-            throw  new ApiRequestException("This user is assigned on the Admin.");
         }
 
     }

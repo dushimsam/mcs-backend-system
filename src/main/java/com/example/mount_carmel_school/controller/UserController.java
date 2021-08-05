@@ -2,6 +2,8 @@ package com.example.mount_carmel_school.controller;
 
 
 import com.example.mount_carmel_school.dto.DeleteResponseDto;
+import org.springframework.data.domain.Pageable;
+import com.example.mount_carmel_school.dto.UserDto.PaginatedUserResponse;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoGet;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoPost;
 import com.example.mount_carmel_school.dto.auth_dto.AuthRequest;
@@ -39,6 +41,12 @@ public class UserController {
     public ResponseEntity<List<UserDtoGet>> getAll() {
         return new ResponseEntity<List<UserDtoGet>>(userService.getAll(), HttpStatus.OK);
     }
+
+    @GetMapping("/paginated")
+    public ResponseEntity getAllPaginated(Pageable pageable) {
+        return  ResponseEntity.ok(userService.getAllPaginated(pageable));
+    }
+
 
     @PostMapping
     public ResponseEntity<UserDtoGet> add(@RequestBody UserDtoPost userDtoPost){
@@ -79,22 +87,7 @@ public class UserController {
             throw new Exception("Invalid userName/password");
         }
 
-
         UserDtoGet user = userService.getByUsername(authRequest.getLogin());
-
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\"id\" :");
-        builder.append(user.getId());
-        builder.append(", \"firstName\" :");
-        builder.append(user.getFirstName());
-        builder.append(", \"lastName\" :");
-        builder.append(user.getLastName());
-        builder.append(", \"category\" :");
-        builder.append(user.getCategory());
-        builder.append(", \"email\" :");
-        builder.append(user.getEmail());
-        builder.append("}");
-
         return new ResponseEntity<AuthResponse>(new AuthResponse(jwtUtil.generateToken(user)),HttpStatus.OK) ;
     }
 
@@ -109,8 +102,26 @@ public class UserController {
         return new ResponseEntity<PasswordChangeResponse>(userService.changePassword(userId,passwordChangeRequest), HttpStatus.OK) ;
     }
 
-    @PutMapping("toggle-disable/{userId}")
+    @PutMapping("toggle-lock/{userId}")
     public ResponseEntity<DeleteResponseDto> disableUnDisable(@PathVariable("userId") Long id) {
         return new ResponseEntity<DeleteResponseDto>(userService.disableUnDisable(id), HttpStatus.OK);
+    }
+
+
+    @PutMapping("toggle-confirm/{userId}")
+    public ResponseEntity<UserDtoGet> confirmReject(@PathVariable("userId") Long id) {
+        return new ResponseEntity<>(userService.confirmReject(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<DeleteResponseDto> delete(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
+    }
+
+
+    @GetMapping(path = "/search/{key}")
+    public ResponseEntity search(
+           @PathVariable("key") String key, Pageable pageable) {
+        return  ResponseEntity.ok(userService.search(key,pageable));
     }
 }
