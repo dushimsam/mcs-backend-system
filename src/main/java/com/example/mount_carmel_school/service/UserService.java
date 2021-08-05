@@ -1,8 +1,11 @@
 package com.example.mount_carmel_school.service;
 
 import com.example.mount_carmel_school.dto.DeleteResponseDto;
+import com.example.mount_carmel_school.dto.UserDto.PaginatedUserResponse;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoGet;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoPost;
+import com.example.mount_carmel_school.dto.auth_dto.PasswordChangeRequest;
+import com.example.mount_carmel_school.dto.auth_dto.PasswordChangeResponse;
 import com.example.mount_carmel_school.exception.ApiRequestException;
 import com.example.mount_carmel_school.exception.NotFoundException;
 import com.example.mount_carmel_school.model.User;
@@ -14,6 +17,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,10 +28,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -66,12 +76,24 @@ public class UserService implements UserDetailsService {
     }
 
     public List<UserDtoGet> getAll() {
-      List<User> users =  userRepository.findAll();
-      List<UserDtoGet>  usersDto = new ArrayList<>();
-        for (User item : users){
-            usersDto.add(new UserDtoGet(item));
-        }
-        return usersDto;
+        List<User> users =  userRepository.findAll();
+        return traversalCopy(users);
+    }
+
+    public PaginatedUserResponse getAllPaginated(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        return PaginatedUserResponse.builder()
+                .numberOfItems(users.getTotalElements()).numberOfPages(users.getTotalPages())
+                .users(traversalCopy(users.getContent()))
+                .build();
+    }
+
+    public PaginatedUserResponse search(String key,Pageable pageable) {
+        Page<User> users = userRepository.findByEmailContainingAndFirstNameContainingAndLastNameContaining(key,key,key,pageable);
+        return PaginatedUserResponse.builder()
+                .numberOfItems(users.getTotalElements()).numberOfPages(users.getTotalPages())
+                .users(traversalCopy(users.getContent()))
+                .build();
     }
 
     public UserDtoGet get(Long userId) {
@@ -84,10 +106,25 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public UserDtoGet confirmReject(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("User"));
+        user.setIsConfirmed(!user.getIsConfirmed());
+        return new UserDtoGet(user);
+    }
 
-    public User getByUsername(String username)
+    public DeleteResponseDto delete(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("User"));
+        userRepository.delete(user);
+        return new DeleteResponseDto(new UserDtoGet(user));
+    }
+    public UserDtoGet getByUsername(String username)
     {
-        return userRepository.findByUserName(username);
+        return new UserDtoGet(userRepository.findByUserName(username));
+    }
+
+    public UserDtoGet getByEmail(String email)
+    {
+        return new UserDtoGet(userRepository.findByEmail(email));
     }
 
     public ResponseEntity<Object> changeProfile(MultipartFile file, Long userId){
@@ -136,6 +173,19 @@ public class UserService implements UserDetailsService {
         return new UserDtoGet(user);
     }
 
+
+    public PasswordChangeResponse changePassword(Long userId, PasswordChangeRequest passwordChangeRequest)
+    {
+        User user = userRepository.findById(userId).orElseThrow(()-> new NotFoundException("User"));
+
+        String curr_password = bCryptPasswordEncoder.encode(passwordChangeRequest.getCurrent_password());
+        if(curr_password.equals(user.getPassword()))
+        {
+            user.setPassword(bCryptPasswordEncoder.encode(passwordChangeRequest.getNew_password()));
+        }
+       return new PasswordChangeResponse("PASSWORD CHANGED SUCCESSFULLY",new UserDtoGet(user));
+    }
+
     public DeleteResponseDto disableUnDisable(Long userId)
     {
         User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("User"));
@@ -160,4 +210,15 @@ public class UserService implements UserDetailsService {
         }
 
     }
+
+    public List<UserDtoGet> traversalCopy(List<User> users)
+    {
+        List<UserDtoGet>  usersDto = new ArrayList<>();
+        for (User item : users){
+            usersDto.add(new UserDtoGet(item));
+        }
+        return usersDto;
+    }
 }
+
+

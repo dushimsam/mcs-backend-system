@@ -2,6 +2,7 @@ package com.example.mount_carmel_school.model;
 
 import com.example.mount_carmel_school.enums.UserCategory;
 import com.example.mount_carmel_school.model.global.Auditable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -54,6 +55,7 @@ public class User extends Auditable<String> implements UserDetails{
     @Column(nullable = false)
     private String phone;
 
+    @JsonIgnore
     @NotNull
     @Column(nullable = false)
     private String password;

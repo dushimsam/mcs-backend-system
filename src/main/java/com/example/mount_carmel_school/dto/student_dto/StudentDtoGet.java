@@ -15,6 +15,7 @@ public class StudentDtoGet {
         private String studentCode;
         private String studentNames;
         private String studentClass;
+        private String gender;
         private Date createdAt;
         private Date lastModifiedAt;
         public StudentDtoGet(Student student){

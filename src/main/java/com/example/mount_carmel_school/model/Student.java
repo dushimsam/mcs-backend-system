@@ -32,6 +32,9 @@ public class Student extends Auditable<String> {
     private String studentNames;
 
     @NotNull
+    private String gender;
+
+    @NotNull
     @Column(nullable = false)
     private String studentClass;
 

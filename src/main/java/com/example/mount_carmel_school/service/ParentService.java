@@ -1,5 +1,8 @@
 package com.example.mount_carmel_school.service;
 
+import com.example.mount_carmel_school.dto.PaginatedResponseDto;
+import com.example.mount_carmel_school.dto.UserDto.PaginatedUserResponse;
+import com.example.mount_carmel_school.dto.parent_dto.PaginatedParentResponse;
 import com.example.mount_carmel_school.dto.parent_dto.ParentDtoGet;
 import com.example.mount_carmel_school.dto.parent_dto.ParentDtoPost;
 import com.example.mount_carmel_school.dto.parent_phone.ParentPhoneDtoPost;
@@ -14,8 +17,10 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +31,8 @@ public class ParentService {
     @Autowired
     private ParentRepository parentRepository;
 
-    @Autowired
-    private SchoolAdminRepository schoolAdminRepository;
+//    @Autowired
+//    private SchoolAdminRepository schoolAdminRepository;
 
     @Autowired
     private SchoolEmployeeRepository schoolEmployeeRepository;
@@ -76,11 +81,12 @@ public class ParentService {
 
     public List<ParentDtoGet> getAll() {
         List<Parent> parents =  parentRepository.findAll();
-        List<ParentDtoGet> parentsDto = new ArrayList<>();
-        for (Parent item : parents){
-            parentsDto.add(new ParentDtoGet(item));
-        }
-        return parentsDto;
+        return traversalCopy(parents);
+    }
+
+    public PaginatedResponseDto getAllPaginated(Pageable pageable) {
+        Page<Parent> parents =  parentRepository.findAll(pageable);
+        return new PaginatedResponseDto(traversalCopy(parents.getContent()), pageable.getPageNumber(), parents.getTotalElements(),parents.getTotalPages());
     }
 
     public ParentDtoGet get(Long id) {
@@ -88,23 +94,37 @@ public class ParentService {
         return new ParentDtoGet(parent);
     }
 
-    public List<ParentDtoGet> getByStatus(String status) {
-
-        if(!status.equals("ACTIVE") && !status.equals("INACTIVE"))
-        {
-            throw  new ApiRequestException("STATUS SHOULD BE EITHER ACTIVE OR INACTIVE");
-        }
-        List<User> users = userRepository.findAllByIsLockedAndCategory(false,UserCategory.PARENT);
-        List<ParentDtoGet> parents = new ArrayList<>();
-
-        for(User user:users)
-        {
-            parents.add(new ParentDtoGet(parentRepository.findParentByUser(user)));
-        }
-        return parents;
+    public List<ParentDtoGet> getAllByLockStatus(boolean status) {
+        List<Parent> parents = parentRepository.findAllByUser_IsLocked(status);
+        return traversalCopy(parents);
     }
 
 
+    public List<ParentDtoGet> getAllByConfirmStatus(boolean status) {
+        List<Parent> parents = parentRepository.findAllByUser_IsConfirmed(status);
+        return traversalCopy(parents);
+    }
+
+
+    public PaginatedResponseDto search(String key, Pageable pageable) {
+        Page<Parent> parents = parentRepository.findByUser_FirstNameContainingAndUser_LastNameContainingAndUser_EmailContaining(key,key,key,pageable);
+        return new PaginatedResponseDto(traversalCopy(parents.getContent()),pageable.getPageNumber(),parents.getTotalElements(),parents.getTotalPages());
+    }
+
+    public PaginatedResponseDto searchConfirmStatusPaginated(String key,boolean status,Pageable pageable)
+    {
+        Page<Parent> parents = parentRepository.findByUser_FirstNameContainingAndUser_LastNameContainingAndUser_EmailContainingAndUser_IsConfirmed(key,key,key,status,pageable);
+        return new PaginatedResponseDto(traversalCopy(parents.getContent()),pageable.getPageNumber(),parents.getTotalElements(),parents.getTotalPages());
+    }
+    public PaginatedParentResponse getAllByConfirmStatusPaginated(Pageable pageable,boolean status) {
+        Page<Parent> parents = parentRepository.findAllByUser_IsConfirmed(status,pageable);
+        return new PaginatedParentResponse(traversalCopy(parents.getContent()),parents.getTotalElements(),parents.getTotalPages());
+    }
+
+    public PaginatedParentResponse getAllByLockStatusPaginated(Pageable pageable,boolean status) {
+        Page<Parent> parents = parentRepository.findAllByUser_IsLocked(status,pageable);
+        return new PaginatedParentResponse(traversalCopy(parents.getContent()),parents.getTotalElements(),parents.getTotalPages());
+    }
 
     public ParentDtoGet getByUser(Long id) {
 
@@ -146,12 +166,15 @@ public class ParentService {
          if(parentRepository.findParentByUser(user) != null)
     {
         throw  new ApiRequestException("One user can not be assigned more than one parent.");
-    }else if(schoolEmployeeRepository.findByUser(user) != null){
-             throw  new ApiRequestException("This user is assigned on the Employee.");
-    }else if(schoolAdminRepository.findByUser(user) != null)
-         {
-             throw  new ApiRequestException("This user is assigned on the Admin.");
-         }
+    }
+    }
 
+    public List<ParentDtoGet> traversalCopy(List<Parent> parents)
+    {
+        List<ParentDtoGet> parentsDto = new ArrayList<>();
+        for (Parent item : parents){
+            parentsDto.add(new ParentDtoGet(item));
+        }
+        return parentsDto;
     }
 }

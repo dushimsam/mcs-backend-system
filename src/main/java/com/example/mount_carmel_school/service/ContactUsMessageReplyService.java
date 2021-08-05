@@ -2,6 +2,9 @@ package com.example.mount_carmel_school.service;
 
 import com.example.mount_carmel_school.dto.contact_us_message_reply_dto.ContactUsMessageReplyDtoGet;
 import com.example.mount_carmel_school.dto.contact_us_message_reply_dto.ContactUsMessageReplyDtoPost;
+import com.example.mount_carmel_school.enums.UserCategory;
+import com.example.mount_carmel_school.exception.ApiRequestException;
+import com.example.mount_carmel_school.exception.NotFoundException;
 import com.example.mount_carmel_school.model.ContactUsMessage;
 import com.example.mount_carmel_school.model.ContactUsMessageReply;
 import com.example.mount_carmel_school.model.SchoolEmployee;
@@ -31,12 +34,20 @@ public class ContactUsMessageReplyService {
 
     public ContactUsMessageReplyDtoGet add(ContactUsMessageReplyDtoPost contactUsMessageReplyDtoPost)  {
         ContactUsMessageReply newReply = new ContactUsMessageReply();
-        SchoolEmployee schoolEmployee = schoolEmployeeRepository.findById(contactUsMessageReplyDtoPost.getSchoolEmployeeId()).get();
-        ContactUsMessage contactUsMessage = contactUsMessageRepository.findById(contactUsMessageReplyDtoPost.getContactUsMessageId()).get();
+        SchoolEmployee schoolEmployee = schoolEmployeeRepository.findById(contactUsMessageReplyDtoPost.getSchoolEmployeeId()).orElseThrow(()->new NotFoundException("School Employee"));
+
+        if(schoolEmployee.getUser().getCategory() != UserCategory.SCHOOL_EMPLOYEE)
+        {
+            throw  new ApiRequestException("The user replier should be the school-employee");
+        }
+
+
+        ContactUsMessage contactUsMessage = contactUsMessageRepository.findById(contactUsMessageReplyDtoPost.getContactUsMessageId()).orElseThrow(()->new NotFoundException("Contact us Message"));
         newReply.setSchoolEmployee(schoolEmployee);
         newReply.setContactUsMessage(contactUsMessage);
         newReply.setReplyEmail(contactUsMessageReplyDtoPost.getEmailUsedToReply());
         newReply.setReplyMessage(contactUsMessageReplyDtoPost.getReplyMessage());
+        contactUsMessage.setRead(true);
         contactUsMessage.setReplied(true);
         contactUsMessageRepository.save(contactUsMessage);
         return new ContactUsMessageReplyDtoGet(contactUsMessageReplyRepository.save(newReply));
@@ -44,7 +55,7 @@ public class ContactUsMessageReplyService {
 
     public ContactUsMessageReplyDtoGet get(Long replyId)
     {
-        return new ContactUsMessageReplyDtoGet(contactUsMessageReplyRepository.findById(replyId).get());
+        return new ContactUsMessageReplyDtoGet(contactUsMessageReplyRepository.findById(replyId).orElseThrow(()->new NotFoundException("Contact us Message")));
     }
 
     public List<ContactUsMessageReplyDtoGet> getAll()
