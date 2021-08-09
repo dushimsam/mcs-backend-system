@@ -8,6 +8,7 @@ import com.example.mount_carmel_school.model.ParentPhone;
 
 import com.example.mount_carmel_school.model.Student;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class ParentDtoGet {
     private Long id;
     private String residence;

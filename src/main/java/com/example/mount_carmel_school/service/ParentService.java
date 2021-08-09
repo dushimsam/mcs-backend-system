@@ -1,7 +1,6 @@
 package com.example.mount_carmel_school.service;
 
 import com.example.mount_carmel_school.dto.PaginatedResponseDto;
-import com.example.mount_carmel_school.dto.UserDto.PaginatedUserResponse;
 import com.example.mount_carmel_school.dto.parent_dto.PaginatedParentResponse;
 import com.example.mount_carmel_school.dto.parent_dto.ParentDtoGet;
 import com.example.mount_carmel_school.dto.parent_dto.ParentDtoPost;
@@ -13,6 +12,7 @@ import com.example.mount_carmel_school.model.Parent;
 import com.example.mount_carmel_school.model.Student;
 import com.example.mount_carmel_school.model.User;
 import com.example.mount_carmel_school.repository.*;
+import com.example.mount_carmel_school.service.notification.processor.ParentRegistrationNotificationProcessor;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +49,11 @@ public class ParentService {
     @Autowired
     private ParentPhoneService parentPhoneService;
 
+    @Autowired
+    ParentRegistrationNotificationProcessor processor;
+//    @Autowired
+//    private NotificationController notificationController;
+
     public ParentDtoGet add(ParentDtoPost parentDtoPost)  {
             User user = userRepository.findById(parentDtoPost.getUserId()).orElseThrow(()-> new NotFoundException("User"));
             Parent newParent = new Parent();
@@ -57,6 +62,7 @@ public class ParentService {
             newParent.setUser(user);
             Parent savedParent = parentRepository.save(newParent);
             parentPhoneService.addPhoneToParent(new ParentPhoneDtoPost(savedParent.getId(), parentDtoPost.getPhone()));
+            processor.process(get(savedParent.getId()));
             return  get(savedParent.getId());
         }
 
