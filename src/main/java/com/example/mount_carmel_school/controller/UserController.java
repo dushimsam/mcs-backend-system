@@ -2,10 +2,14 @@ package com.example.mount_carmel_school.controller;
 
 
 import com.example.mount_carmel_school.dto.DeleteResponseDto;
+import org.springframework.data.domain.Pageable;
+import com.example.mount_carmel_school.dto.UserDto.PaginatedUserResponse;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoGet;
 import com.example.mount_carmel_school.dto.UserDto.UserDtoPost;
 import com.example.mount_carmel_school.dto.auth_dto.AuthRequest;
 import com.example.mount_carmel_school.dto.auth_dto.AuthResponse;
+import com.example.mount_carmel_school.dto.auth_dto.PasswordChangeRequest;
+import com.example.mount_carmel_school.dto.auth_dto.PasswordChangeResponse;
 import com.example.mount_carmel_school.model.User;
 import com.example.mount_carmel_school.service.UserService;
 import com.example.mount_carmel_school.util.JwtUtil;
@@ -38,6 +42,12 @@ public class UserController {
         return new ResponseEntity<List<UserDtoGet>>(userService.getAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/paginated")
+    public ResponseEntity getAllPaginated(Pageable pageable) {
+        return  ResponseEntity.ok(userService.getAllPaginated(pageable));
+    }
+
+
     @PostMapping
     public ResponseEntity<UserDtoGet> add(@RequestBody UserDtoPost userDtoPost){
         return new ResponseEntity<UserDtoGet>(userService.add(userDtoPost), HttpStatus.CREATED) ;
@@ -48,40 +58,37 @@ public class UserController {
         return   new ResponseEntity<UserDtoGet>(userService.get(id),HttpStatus.OK);
     }
 
+    @GetMapping(path = "/username/{userName}")
+    public ResponseEntity<UserDtoGet> getByUserName(
+            @PathVariable("userName") String userName) {
+        return   new ResponseEntity<UserDtoGet>(userService.getByUsername(userName),HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/email/{email}")
+    public ResponseEntity<UserDtoGet> getByEmail(
+            @PathVariable("email") String email) {
+        return   new ResponseEntity<UserDtoGet>(userService.getByEmail(email),HttpStatus.OK);
+    }
+
+
     @PutMapping(path = "{id}")
     public ResponseEntity<UserDtoGet> update(
             @PathVariable("id") Long id,@RequestBody UserDtoPost userDtoPost) {
         return   new ResponseEntity<UserDtoGet>(userService.update(userDtoPost,id),HttpStatus.OK);
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping(path="/auth/login")
     public ResponseEntity<AuthResponse> generateToken(@RequestBody AuthRequest authRequest) throws Exception {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
+                    new UsernamePasswordAuthenticationToken(authRequest.getLogin(), authRequest.getPassword())
             );
         } catch (Exception ex) {
             throw new Exception("Invalid userName/password");
         }
 
-
-
-        User user = userService.getByUsername(authRequest.getUserName());
-
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\"id\" :");
-        builder.append(user.getId());
-        builder.append(", \"firstName\" :");
-        builder.append(user.getFirstName());
-        builder.append(", \"lastName\" :");
-        builder.append(user.getLastName());
-        builder.append(", \"category\" :");
-        builder.append(user.getLastName());
-        builder.append(", \"email\" :");
-        builder.append(user.getEmail());
-        builder.append("}");
-
-        return new ResponseEntity<AuthResponse>(new AuthResponse(jwtUtil.generateToken(builder.toString())),HttpStatus.OK) ;
+        UserDtoGet user = userService.getByUsername(authRequest.getLogin());
+        return new ResponseEntity<AuthResponse>(new AuthResponse(jwtUtil.generateToken(user)),HttpStatus.OK) ;
     }
 
     @PutMapping("change-profile/{userId}")
@@ -90,8 +97,31 @@ public class UserController {
         return userService.changeProfile(file,userId);
     }
 
-    @PutMapping("toggle-disable/{userId}")
+    @PutMapping(path="change-password/{userId}")
+    public ResponseEntity<PasswordChangeResponse> add(@PathVariable("userId") Long userId, @RequestBody PasswordChangeRequest passwordChangeRequest){
+        return new ResponseEntity<PasswordChangeResponse>(userService.changePassword(userId,passwordChangeRequest), HttpStatus.OK) ;
+    }
+
+    @PutMapping("toggle-lock/{userId}")
     public ResponseEntity<DeleteResponseDto> disableUnDisable(@PathVariable("userId") Long id) {
         return new ResponseEntity<DeleteResponseDto>(userService.disableUnDisable(id), HttpStatus.OK);
+    }
+
+
+    @PutMapping("toggle-confirm/{userId}")
+    public ResponseEntity<UserDtoGet> confirmReject(@PathVariable("userId") Long id) {
+        return new ResponseEntity<>(userService.confirmReject(id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<DeleteResponseDto> delete(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
+    }
+
+
+    @GetMapping(path = "/search/{key}")
+    public ResponseEntity search(
+           @PathVariable("key") String key, Pageable pageable) {
+        return  ResponseEntity.ok(userService.search(key,pageable));
     }
 }

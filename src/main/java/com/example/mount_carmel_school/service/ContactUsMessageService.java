@@ -1,14 +1,19 @@
 package com.example.mount_carmel_school.service;
 
+import com.example.mount_carmel_school.dto.PaginatedResponseDto;
 import com.example.mount_carmel_school.dto.contact_us_message_dto.ContactUsMessageDtoGet;
 import com.example.mount_carmel_school.dto.contact_us_message_dto.ContactUsMessageDtoPost;
 import com.example.mount_carmel_school.exception.ApiRequestException;
+import com.example.mount_carmel_school.exception.NotFoundException;
 import com.example.mount_carmel_school.model.ContactUsMessage;
 import com.example.mount_carmel_school.repository.ContactUsMessageRepository;
+import com.example.mount_carmel_school.service.notification.processor.NewContactUsMessageNotificationProcessor;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,70 +22,89 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Service
+
 public class ContactUsMessageService {
     @Autowired
     private ContactUsMessageRepository contactUsMessageRepository;
 
+    @Autowired
+    private NewContactUsMessageNotificationProcessor processor;
+
     public ContactUsMessageDtoGet add(ContactUsMessageDtoPost contactUsMessageDtoPost){
         ContactUsMessage contactUsMessage = new ContactUsMessage();
         BeanUtils.copyProperties(contactUsMessageDtoPost,contactUsMessage);
-//        if(contactUsMessageRepository.findContactUsMessageByEmailAndMessageAndNames(contactUsMessageDtoPost.getEmail(),contactUsMessageDtoPost.getMessage(),contactUsMessageDtoPost.getNames()) != null)
-//        {
-//            throw new ApiRequestException("DUPLICATES NOT ALLOWED");
-//        }
-        return new ContactUsMessageDtoGet(contactUsMessageRepository.save(contactUsMessage));
+        ContactUsMessageDtoGet saved = new ContactUsMessageDtoGet(contactUsMessageRepository.save(contactUsMessage));
+        processor.process(saved);
+        return saved;
     }
 
 
     public List<ContactUsMessageDtoGet> getAll()
     {
       List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findAll();
-        List<ContactUsMessageDtoGet> formattedContactUsMessages = new ArrayList<>();
-
-        for(ContactUsMessage item:contactUsMessages)
-        {
-            formattedContactUsMessages.add(new ContactUsMessageDtoGet(item));
-        }
-        return formattedContactUsMessages;
+       return traverseCopy(contactUsMessages);
     }
+
+    public PaginatedResponseDto getPaginatedAll(Pageable pageable)
+    {
+        Page<ContactUsMessage>  messages = contactUsMessageRepository.findAll(pageable);
+        return new PaginatedResponseDto(traverseCopy(messages.getContent()), pageable.getPageNumber(), messages.getTotalElements(), messages.getTotalPages());
+    }
+
+
+    public PaginatedResponseDto search(String key, Pageable pageable)
+    {
+      Page<ContactUsMessage>  messages = contactUsMessageRepository.findByEmailContainingAndNamesContainingAndMessageContaining(key,key,key,pageable);
+      return new PaginatedResponseDto(traverseCopy(messages.getContent()), pageable.getPageNumber(), messages.getTotalElements(), messages.getTotalPages());
+    }
+
 
     public ContactUsMessageDtoGet get(Long messageId)
     {
-        return new ContactUsMessageDtoGet(contactUsMessageRepository.findById(messageId).get());
+        return new ContactUsMessageDtoGet(contactUsMessageRepository.findById(messageId).orElseThrow(()->new NotFoundException("ContactUsMessage")));
     }
 
 
     public List<ContactUsMessageDtoGet> getByReadStatus(boolean status)
     {
         List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findContactUsMessageByIsRead(status);
-        List<ContactUsMessageDtoGet> formattedContactUsMessages = new ArrayList<>();
+        return traverseCopy(contactUsMessages);
+    }
 
-        for(ContactUsMessage item:contactUsMessages)
-        {
-            formattedContactUsMessages.add(new ContactUsMessageDtoGet(item));
-        }
-        return formattedContactUsMessages;
+    public PaginatedResponseDto getByReadStatusPaginated(boolean status,Pageable pageable)
+    {
+        Page<ContactUsMessage>  messages = contactUsMessageRepository.findContactUsMessageByIsRead(status,pageable);
+        return new PaginatedResponseDto(traverseCopy(messages.getContent()), pageable.getPageNumber(), messages.getTotalElements(), messages.getTotalPages());
     }
 
     public List<ContactUsMessageDtoGet> getByRepliedStatus(boolean status)
     {
         List<ContactUsMessage> contactUsMessages = contactUsMessageRepository.findContactUsMessageByIsReplied(status);
-        List<ContactUsMessageDtoGet> formattedContactUsMessages = new ArrayList<>();
+        return traverseCopy(contactUsMessages);
+    }
 
+
+    public PaginatedResponseDto getByRepliedStatusPaginated(boolean status,Pageable pageable)
+    {
+        Page<ContactUsMessage>  messages = contactUsMessageRepository.findContactUsMessageByIsReplied(status,pageable);
+        return new PaginatedResponseDto(traverseCopy(messages.getContent()), pageable.getPageNumber(), messages.getTotalElements(), messages.getTotalPages());
+    }
+
+    public ContactUsMessageDtoGet markAsRead(Long messageId)
+    {
+        ContactUsMessage contactUsMessage = contactUsMessageRepository.findById(messageId).orElseThrow(()->new NotFoundException("ContactUsMessage"));
+        contactUsMessage.setRead(true);
+       return new ContactUsMessageDtoGet(contactUsMessageRepository.save(contactUsMessage));
+    }
+
+    public List<ContactUsMessageDtoGet> traverseCopy(List<ContactUsMessage> contactUsMessages)
+    {
+        List<ContactUsMessageDtoGet> formattedContactUsMessages = new ArrayList<>();
         for(ContactUsMessage item:contactUsMessages)
         {
             formattedContactUsMessages.add(new ContactUsMessageDtoGet(item));
         }
         return formattedContactUsMessages;
     }
-
-
-    public ContactUsMessageDtoGet markAsRead(Long messageId)
-    {
-        ContactUsMessage contactUsMessage = contactUsMessageRepository.findById(messageId).get();
-        contactUsMessage.setRead(true);
-       return new ContactUsMessageDtoGet(contactUsMessageRepository.save(contactUsMessage));
-    }
-
 
 }

@@ -1,5 +1,5 @@
 package com.example.mount_carmel_school.controller;
-import com.example.mount_carmel_school.dto.parent_dto.ParentDtoGet;
+
 import com.example.mount_carmel_school.dto.school_employee_dto.SchoolEmployeeDtoGet;
 import com.example.mount_carmel_school.dto.school_employee_dto.SchoolEmployeeDtoPost;
 import com.example.mount_carmel_school.service.SchoolEmployeeService;

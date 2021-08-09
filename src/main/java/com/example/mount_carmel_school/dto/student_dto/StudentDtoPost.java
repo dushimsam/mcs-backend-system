@@ -11,5 +11,7 @@ public class StudentDtoPost {
     private String studentCode;
     private Long parentId;
     private String studentNames;
+    private String gender;
     private String studentClass;
+
 }

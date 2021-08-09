@@ -13,6 +13,8 @@ import com.example.mount_carmel_school.model.User;
 import com.example.mount_carmel_school.repository.ParentMessageReceiverRepository;
 import com.example.mount_carmel_school.repository.ParentMessageRepository;
 import com.example.mount_carmel_school.repository.UserRepository;
+import com.example.mount_carmel_school.service.notification.processor.NewParentMessageNotificationProcessor;
+import com.example.mount_carmel_school.service.notification.processor.NewSchoolNewsPostNotificationProcessor;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +44,8 @@ public class ParentMessageService {
     @Autowired
     private ParentMessageReceiverRepository parentMessageReceiverRepository;
 
+    @Autowired
+    private NewParentMessageNotificationProcessor processor;
 
     public ParentMessageDtoGet add(ParentMessageDtoPost parentMessageDtoPost){
 
@@ -50,7 +54,6 @@ public class ParentMessageService {
         if(parentMessageDtoPost.getMessageStatus() == PARTICULAR)
         {
             User receiver = userRepository.findById(parentMessageDtoPost.getUser_receiverId()).orElseThrow(()->new NotFoundException("User Receiver"));
-
             if(parentMessageDtoPost.getUser_senderId().equals(parentMessageDtoPost.getUser_receiverId()))
             {
                 throw new ApiRequestException("Sender and Receiver are the same");
@@ -60,14 +63,14 @@ public class ParentMessageService {
             throw new ApiRequestException("A Parent is not allowed to send the Message with ALL status");
         }
 
-
-
         ParentMessage parentMessage = new ParentMessage();
         BeanUtils.copyProperties(parentMessageDtoPost,parentMessage);
         parentMessage.setSender(user);
         ParentMessage newParentMessage = parentMessageRepository.save(parentMessage);
         handleSendMessage(parentMessageDtoPost,newParentMessage);
-        return new ParentMessageDtoGet(newParentMessage);
+        ParentMessageDtoGet saved = new ParentMessageDtoGet(newParentMessage);
+        processor.process(saved);
+        return saved;
     }
 
     public void handleSendMessage(ParentMessageDtoPost parentMessageDtoPost,ParentMessage newParentMessage)
