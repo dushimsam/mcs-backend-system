@@ -7,7 +7,7 @@ import com.example.mount_carmel_school.exception.ApiRequestException;
 import com.example.mount_carmel_school.exception.NotFoundException;
 import com.example.mount_carmel_school.model.ContactUsMessage;
 import com.example.mount_carmel_school.repository.ContactUsMessageRepository;
-import com.example.mount_carmel_school.service.notification.processor.NewContactUsMessageNotificationProcessor;
+//import com.example.mount_carmel_school.service.notification.processor.NewContactUsMessageNotificationProcessor;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -27,14 +27,14 @@ public class ContactUsMessageService {
     @Autowired
     private ContactUsMessageRepository contactUsMessageRepository;
 
-    @Autowired
-    private NewContactUsMessageNotificationProcessor processor;
+//    @Autowired
+//    private NewContactUsMessageNotificationProcessor processor;
 
     public ContactUsMessageDtoGet add(ContactUsMessageDtoPost contactUsMessageDtoPost){
         ContactUsMessage contactUsMessage = new ContactUsMessage();
         BeanUtils.copyProperties(contactUsMessageDtoPost,contactUsMessage);
         ContactUsMessageDtoGet saved = new ContactUsMessageDtoGet(contactUsMessageRepository.save(contactUsMessage));
-        processor.process(saved);
+//        processor.process(saved);
         return saved;
     }
 

@@ -2,9 +2,7 @@ package com.example.mount_carmel_school.dto.parent_message_receiver_dto;
 
 import com.example.mount_carmel_school.dto.UserDto.UserDtoGet;
 import com.example.mount_carmel_school.dto.parent_message_dto.ParentMessageDtoGet;
-import com.example.mount_carmel_school.model.ParentMessage;
 import com.example.mount_carmel_school.model.ParentMessageReceiver;
-import com.example.mount_carmel_school.model.User;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
 

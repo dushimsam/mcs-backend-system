@@ -12,5 +12,5 @@ public class ParentMessageDtoPost {
   private MessageType messageType = MessageType.TEXT;
   private String message;
   private MessageDirection messageDirection;
-  private MessageStatus messageStatus;
+  private MessageStatus messageStatus = MessageStatus.PARTICULAR;
 }

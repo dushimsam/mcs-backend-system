@@ -8,4 +8,5 @@ public class SchoolNewsDtoPost {
     private String title;
     private Long postedBy_employeeId;
     private String mainPicPath;
+    private String paragraphs;
 }

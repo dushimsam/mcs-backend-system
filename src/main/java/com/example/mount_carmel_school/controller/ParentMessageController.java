@@ -5,6 +5,7 @@ import com.example.mount_carmel_school.dto.parent_message_dto.ParentMessageDtoGe
 import com.example.mount_carmel_school.dto.parent_message_dto.ParentMessageDtoPost;
 import com.example.mount_carmel_school.service.ParentMessageService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,11 @@ public class ParentMessageController {
         return new  ResponseEntity<>(parentMessageService.getAll(), HttpStatus.OK);
     }
 
+
+    @GetMapping("/paginated")
+    public ResponseEntity<?> getAll(Pageable pageable) {
+        return new  ResponseEntity<>(parentMessageService.getAll(pageable), HttpStatus.OK);
+    }
 
 
     @GetMapping(path = "{id}")
@@ -52,6 +58,11 @@ public class ParentMessageController {
     @GetMapping(path="/user/{userId}")
     public ResponseEntity<List<ParentMessageDtoGet>> getByUser(@PathVariable("userId") Long id) {
         return new  ResponseEntity<>(parentMessageService.getAllByUser(id), HttpStatus.OK);
+    }
+
+    @GetMapping(path="/user/{userId}/paginated")
+    public ResponseEntity<?> getByUser(@PathVariable("userId") Long id,Pageable pageable) {
+        return new  ResponseEntity<>(parentMessageService.getAllByUser(id,pageable), HttpStatus.OK);
     }
 
 

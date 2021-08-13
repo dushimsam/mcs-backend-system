@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/parent-phones")
 @AllArgsConstructor
-public class ParentPhoneController {
+public class      ParentPhoneController {
     private final ParentPhoneService parentPhoneService;
 
     @GetMapping

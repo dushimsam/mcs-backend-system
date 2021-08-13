@@ -13,5 +13,4 @@ public class StudentDtoPost {
     private String studentNames;
     private String gender;
     private String studentClass;
-
 }
