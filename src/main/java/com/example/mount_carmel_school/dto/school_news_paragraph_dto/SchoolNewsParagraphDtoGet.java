@@ -41,10 +41,6 @@ public class SchoolNewsParagraphDtoGet {
     {
         BeanUtils.copyProperties(schoolNewsParagraph,this,"schoolNews");
 
-        if(!ignore.equals("NEWS"))
-        {
-            this.schoolNews = new SchoolNewsDtoGet(schoolNewsParagraph.getSchoolNews(),"PARAGRAPH");
-        }
         if(!ignore.equals("PHOTO"))
         {
             if(schoolNewsParagraph.getSchoolNewsParagraphPhotos() != null)

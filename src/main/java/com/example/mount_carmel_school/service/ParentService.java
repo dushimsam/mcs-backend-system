@@ -12,7 +12,7 @@ import com.example.mount_carmel_school.model.Parent;
 import com.example.mount_carmel_school.model.Student;
 import com.example.mount_carmel_school.model.User;
 import com.example.mount_carmel_school.repository.*;
-import com.example.mount_carmel_school.service.notification.processor.ParentRegistrationNotificationProcessor;
+//import com.example.mount_carmel_school.service.notification.processor.ParentRegistrationNotificationProcessor;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -49,8 +49,8 @@ public class ParentService {
     @Autowired
     private ParentPhoneService parentPhoneService;
 
-    @Autowired
-    ParentRegistrationNotificationProcessor processor;
+//    @Autowired
+//    ParentRegistrationNotificationProcessor processor;
 //    @Autowired
 //    private NotificationController notificationController;
 
@@ -62,7 +62,7 @@ public class ParentService {
             newParent.setUser(user);
             Parent savedParent = parentRepository.save(newParent);
             parentPhoneService.addPhoneToParent(new ParentPhoneDtoPost(savedParent.getId(), parentDtoPost.getPhone()));
-            processor.process(get(savedParent.getId()));
+//            processor.process(get(savedParent.getId()));
             return  get(savedParent.getId());
         }
 
@@ -122,14 +122,14 @@ public class ParentService {
         Page<Parent> parents = parentRepository.findByUser_FirstNameContainingAndUser_LastNameContainingAndUser_EmailContainingAndUser_IsConfirmed(key,key,key,status,pageable);
         return new PaginatedResponseDto(traversalCopy(parents.getContent()),pageable.getPageNumber(),parents.getTotalElements(),parents.getTotalPages());
     }
-    public PaginatedParentResponse getAllByConfirmStatusPaginated(Pageable pageable,boolean status) {
+    public PaginatedResponseDto getAllByConfirmStatusPaginated(Pageable pageable,boolean status) {
         Page<Parent> parents = parentRepository.findAllByUser_IsConfirmed(status,pageable);
-        return new PaginatedParentResponse(traversalCopy(parents.getContent()),parents.getTotalElements(),parents.getTotalPages());
+        return new PaginatedResponseDto(traversalCopy(parents.getContent()),pageable.getPageNumber(),parents.getTotalElements(),parents.getTotalPages());
     }
 
-    public PaginatedParentResponse getAllByLockStatusPaginated(Pageable pageable,boolean status) {
+    public PaginatedResponseDto getAllByLockStatusPaginated(Pageable pageable,boolean status) {
         Page<Parent> parents = parentRepository.findAllByUser_IsLocked(status,pageable);
-        return new PaginatedParentResponse(traversalCopy(parents.getContent()),parents.getTotalElements(),parents.getTotalPages());
+        return new PaginatedResponseDto(traversalCopy(parents.getContent()),pageable.getPageNumber(),parents.getTotalElements(),parents.getTotalPages());
     }
 
     public ParentDtoGet getByUser(Long id) {

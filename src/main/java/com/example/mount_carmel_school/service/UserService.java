@@ -108,8 +108,8 @@ public class UserService implements UserDetailsService {
 
     public UserDtoGet confirmReject(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("User"));
-        user.setIsConfirmed(!user.getIsConfirmed());
-        return new UserDtoGet(user);
+        user.setIsConfirmed(true);
+        return new UserDtoGet(userRepository.save(user));
     }
 
     public DeleteResponseDto delete(Long userId) {

@@ -1,6 +1,7 @@
 package com.example.mount_carmel_school.model;
 
 import com.example.mount_carmel_school.model.global.Auditable;
+import com.example.mount_carmel_school.model.global.SchoolNewsPhoto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,12 @@ public class SchoolNews extends Auditable<String> {
     @NotNull
     private String mainPicPath;
 
+    @NotNull
+    @Column(length=200000)
+    @Lob
+    private String  paragraphs;
+
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true,mappedBy = "schoolNews")
-    private List<SchoolNewsParagraph> schoolNewsParagraphs;
+    private List<SchoolNewsPhoto> schoolNewsPhotos;
 }

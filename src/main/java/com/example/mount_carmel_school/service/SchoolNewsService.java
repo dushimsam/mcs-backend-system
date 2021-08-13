@@ -11,8 +11,8 @@ import com.example.mount_carmel_school.model.SchoolEmployee;
 import com.example.mount_carmel_school.repository.SchoolEmployeeRepository;
 import com.example.mount_carmel_school.repository.SchoolNewsParagraphRepository;
 import com.example.mount_carmel_school.repository.SchoolNewsRepository;
-import com.example.mount_carmel_school.service.notification.processor.NewContactUsMessageNotificationProcessor;
-import com.example.mount_carmel_school.service.notification.processor.NewSchoolNewsPostNotificationProcessor;
+//import com.example.mount_carmel_school.service.notification.processor.NewContactUsMessageNotificationProcessor;
+//import com.example.mount_carmel_school.service.notification.processor.NewSchoolNewsPostNotificationProcessor;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -42,8 +42,8 @@ public class SchoolNewsService {
     @Autowired
     private SchoolNewsParagraphService schoolNewsParagraphService;
 
-    @Autowired
-    private NewSchoolNewsPostNotificationProcessor processor;
+//    @Autowired
+//    private NewSchoolNewsPostNotificationProcessor processor;
 //    @Autowired
 //    private SchoolNewsReceiverRepository schoolNewsReceiverRepository;
 
@@ -54,7 +54,7 @@ public class SchoolNewsService {
         BeanUtils.copyProperties(schoolNewsDtoPost,schoolNews);
         schoolNews.setSchoolEmployee(schoolEmployee);
         SchoolNewsDtoGet newSchoolNews = new  SchoolNewsDtoGet(schoolNewsRepository.save(schoolNews));
-        processor.process(newSchoolNews);
+//        processor.process(newSchoolNews);
         return newSchoolNews;
     }
 
