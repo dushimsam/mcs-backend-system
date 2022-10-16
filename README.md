@@ -1,2 +1,3 @@
 # mcs-backend-system
-Mount Carmel School Application
+
+The backend is written in SpringBoot - Java
